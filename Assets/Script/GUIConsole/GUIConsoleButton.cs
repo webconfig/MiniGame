@@ -6,9 +6,7 @@ using System.Collections;
 public class GUIConsoleButton : MonoBehaviour {
 
 	public GUIConsole console;
-
-	[SerializeField]
-	private Rect _buttonRect = new Rect(100f,100f,100f,100f);
+    public Rect _buttonRect = new Rect(100f,100f,100f,100f);
 
 	void Awake ()
 	{

@@ -208,6 +208,7 @@ public class App : MonoBehaviour
         appdomain.RegisterCrossBindingAdaptor(new Adapt_IMessage());
         appdomain.DelegateManager.RegisterFunctionDelegate<Adapt_IMessage.Adaptor>();
 
+        LitJson.JsonMapper.RegisterILRuntimeCLRRedirection(appdomain);
     }
 
     /// <summary>

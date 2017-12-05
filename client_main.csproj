@@ -231,6 +231,15 @@
     <Compile Include="Assets\ILRuntime\Runtime\Stack\RuntimeStack.cs" />
     <Compile Include="Assets\ILRuntime\Runtime\Stack\StackFrame.cs" />
     <Compile Include="Assets\ILRuntime\Runtime\Stack\StackObject.cs" />
+    <Compile Include="Assets\LitJson\IJsonWrapper.cs" />
+    <Compile Include="Assets\LitJson\JsonData.cs" />
+    <Compile Include="Assets\LitJson\JsonException.cs" />
+    <Compile Include="Assets\LitJson\JsonMapper.cs" />
+    <Compile Include="Assets\LitJson\JsonMockWrapper.cs" />
+    <Compile Include="Assets\LitJson\JsonReader.cs" />
+    <Compile Include="Assets\LitJson\JsonWriter.cs" />
+    <Compile Include="Assets\LitJson\Lexer.cs" />
+    <Compile Include="Assets\LitJson\ParserToken.cs" />
     <Compile Include="Assets\Mono.Cecil.20\MonoCecil\Mono.Cecil.Cil\Code.cs" />
     <Compile Include="Assets\Mono.Cecil.20\MonoCecil\Mono.Cecil.Cil\CodeReader.cs" />
     <Compile Include="Assets\Mono.Cecil.20\MonoCecil\Mono.Cecil.Cil\CodeWriter.cs" />

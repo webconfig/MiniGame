@@ -36,8 +36,7 @@ public class GUIConsole : MonoBehaviour {
 		}
 	}
 
-	[SerializeField]
-	private Vector2 _consoleSize = new Vector2(400,300);
+	public Vector2 _consoleSize = new Vector2(400,300);
 	
 	private Vector2 _windowCenterPos = new Vector2(300,200);
 
