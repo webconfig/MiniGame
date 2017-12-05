@@ -22,6 +22,20 @@ namespace ILRuntime.Runtime.Generated
             FieldInfo field;
             Type[] args;
             Type type = typeof(UnityEngine.Vector2);
+            args = new Type[]{typeof(UnityEngine.Vector3)};
+            method = type.GetMethod("op_Implicit", flag, null, args, null);
+            app.RegisterCLRMethodRedirection(method, op_Implicit_0);
+
+            field = type.GetField("x", flag);
+            app.RegisterCLRFieldGetter(field, get_x_0);
+            app.RegisterCLRFieldSetter(field, set_x_0);
+            field = type.GetField("y", flag);
+            app.RegisterCLRFieldGetter(field, get_y_1);
+            app.RegisterCLRFieldSetter(field, set_y_1);
+
+            app.RegisterCLRMemberwiseClone(type, PerformMemberwiseClone);
+
+            app.RegisterCLRCreateDefaultInstance(type, () => new UnityEngine.Vector2());
 
             args = new Type[]{typeof(System.Single), typeof(System.Single)};
             method = type.GetConstructor(flag, null, args, null);
@@ -75,6 +89,52 @@ namespace ILRuntime.Runtime.Generated
             }
         }
 
+        static StackObject* op_Implicit_0(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
+        {
+            ILRuntime.Runtime.Enviorment.AppDomain __domain = __intp.AppDomain;
+            StackObject* ptr_of_this_method;
+            StackObject* __ret = ILIntepreter.Minus(__esp, 1);
+            ptr_of_this_method = ILIntepreter.Minus(__esp, 1);
+            UnityEngine.Vector3 v = (UnityEngine.Vector3)typeof(UnityEngine.Vector3).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack));
+            __intp.Free(ptr_of_this_method);
+
+            var result_of_this_method = (UnityEngine.Vector2)v;
+
+            return ILIntepreter.PushObject(__ret, __mStack, result_of_this_method);
+        }
+
+
+        static object get_x_0(ref object o)
+        {
+            return ((UnityEngine.Vector2)o).x;
+        }
+        static void set_x_0(ref object o, object v)
+        {
+            var h = GCHandle.Alloc(o, GCHandleType.Pinned);
+            UnityEngine.Vector2* p = (UnityEngine.Vector2 *)(void *)h.AddrOfPinnedObject();
+            p->x = (System.Single)v;
+            h.Free();
+        }
+        static object get_y_1(ref object o)
+        {
+            return ((UnityEngine.Vector2)o).y;
+        }
+        static void set_y_1(ref object o, object v)
+        {
+            var h = GCHandle.Alloc(o, GCHandleType.Pinned);
+            UnityEngine.Vector2* p = (UnityEngine.Vector2 *)(void *)h.AddrOfPinnedObject();
+            p->y = (System.Single)v;
+            h.Free();
+        }
+
+        static object PerformMemberwiseClone(ref object o)
+        {
+            return new UnityEngine.Vector2
+            {
+                x = ((UnityEngine.Vector2) o).x,
+                y = ((UnityEngine.Vector2) o).y,
+            };
+        }
 
         static StackObject* Ctor_0(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
         {

@@ -26,10 +26,10 @@ namespace ILRuntime.Runtime.Generated
             method = type.GetMethod("ToArray", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, ToArray_0);
 
-            args = new Type[]{typeof(System.Byte[])};
+            args = new Type[]{};
             method = type.GetConstructor(flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, Ctor_0);
-            args = new Type[]{};
+            args = new Type[]{typeof(System.Byte[])};
             method = type.GetConstructor(flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, Ctor_1);
 
@@ -56,12 +56,9 @@ namespace ILRuntime.Runtime.Generated
         {
             ILRuntime.Runtime.Enviorment.AppDomain __domain = __intp.AppDomain;
             StackObject* ptr_of_this_method;
-            StackObject* __ret = ILIntepreter.Minus(__esp, 1);
-            ptr_of_this_method = ILIntepreter.Minus(__esp, 1);
-            System.Byte[] buffer = (System.Byte[])typeof(System.Byte[]).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack));
-            __intp.Free(ptr_of_this_method);
+            StackObject* __ret = ILIntepreter.Minus(__esp, 0);
 
-            var result_of_this_method = new System.IO.MemoryStream(buffer);
+            var result_of_this_method = new System.IO.MemoryStream();
 
             return ILIntepreter.PushObject(__ret, __mStack, result_of_this_method);
         }
@@ -70,9 +67,12 @@ namespace ILRuntime.Runtime.Generated
         {
             ILRuntime.Runtime.Enviorment.AppDomain __domain = __intp.AppDomain;
             StackObject* ptr_of_this_method;
-            StackObject* __ret = ILIntepreter.Minus(__esp, 0);
+            StackObject* __ret = ILIntepreter.Minus(__esp, 1);
+            ptr_of_this_method = ILIntepreter.Minus(__esp, 1);
+            System.Byte[] buffer = (System.Byte[])typeof(System.Byte[]).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack));
+            __intp.Free(ptr_of_this_method);
 
-            var result_of_this_method = new System.IO.MemoryStream();
+            var result_of_this_method = new System.IO.MemoryStream(buffer);
 
             return ILIntepreter.PushObject(__ret, __mStack, result_of_this_method);
         }

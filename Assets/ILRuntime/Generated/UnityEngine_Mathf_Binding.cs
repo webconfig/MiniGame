@@ -22,9 +22,12 @@ namespace ILRuntime.Runtime.Generated
             FieldInfo field;
             Type[] args;
             Type type = typeof(UnityEngine.Mathf);
+            args = new Type[]{typeof(System.Single)};
+            method = type.GetMethod("CeilToInt", flag, null, args, null);
+            app.RegisterCLRMethodRedirection(method, CeilToInt_0);
             args = new Type[]{typeof(System.Single), typeof(System.Single), typeof(System.Single)};
             method = type.GetMethod("Lerp", flag, null, args, null);
-            app.RegisterCLRMethodRedirection(method, Lerp_0);
+            app.RegisterCLRMethodRedirection(method, Lerp_1);
 
 
         }
@@ -75,7 +78,22 @@ namespace ILRuntime.Runtime.Generated
             }
         }
 
-        static StackObject* Lerp_0(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
+        static StackObject* CeilToInt_0(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
+        {
+            ILRuntime.Runtime.Enviorment.AppDomain __domain = __intp.AppDomain;
+            StackObject* ptr_of_this_method;
+            StackObject* __ret = ILIntepreter.Minus(__esp, 1);
+            ptr_of_this_method = ILIntepreter.Minus(__esp, 1);
+            System.Single f = *(float*)&ptr_of_this_method->Value;
+
+            var result_of_this_method = UnityEngine.Mathf.CeilToInt(f);
+
+            __ret->ObjectType = ObjectTypes.Integer;
+            __ret->Value = result_of_this_method;
+            return __ret + 1;
+        }
+
+        static StackObject* Lerp_1(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
         {
             ILRuntime.Runtime.Enviorment.AppDomain __domain = __intp.AppDomain;
             StackObject* ptr_of_this_method;

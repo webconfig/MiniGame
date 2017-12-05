@@ -13,7 +13,7 @@ using ILRuntime.CLR.Utils;
 
 namespace ILRuntime.Runtime.Generated
 {
-    unsafe class UnityEngine_Camera_Binding
+    unsafe class System_Net_Dns_Binding
     {
         public static void Register(ILRuntime.Runtime.Enviorment.AppDomain app)
         {
@@ -21,22 +21,25 @@ namespace ILRuntime.Runtime.Generated
             MethodBase method;
             FieldInfo field;
             Type[] args;
-            Type type = typeof(UnityEngine.Camera);
-            args = new Type[]{};
-            method = type.GetMethod("get_main", flag, null, args, null);
-            app.RegisterCLRMethodRedirection(method, get_main_0);
+            Type type = typeof(System.Net.Dns);
+            args = new Type[]{typeof(System.String)};
+            method = type.GetMethod("GetHostAddresses", flag, null, args, null);
+            app.RegisterCLRMethodRedirection(method, GetHostAddresses_0);
 
 
         }
 
 
-        static StackObject* get_main_0(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
+        static StackObject* GetHostAddresses_0(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
         {
             ILRuntime.Runtime.Enviorment.AppDomain __domain = __intp.AppDomain;
             StackObject* ptr_of_this_method;
-            StackObject* __ret = ILIntepreter.Minus(__esp, 0);
+            StackObject* __ret = ILIntepreter.Minus(__esp, 1);
+            ptr_of_this_method = ILIntepreter.Minus(__esp, 1);
+            System.String hostNameOrAddress = (System.String)typeof(System.String).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack));
+            __intp.Free(ptr_of_this_method);
 
-            var result_of_this_method = UnityEngine.Camera.main;
+            var result_of_this_method = System.Net.Dns.GetHostAddresses(hostNameOrAddress);
 
             return ILIntepreter.PushObject(__ret, __mStack, result_of_this_method);
         }

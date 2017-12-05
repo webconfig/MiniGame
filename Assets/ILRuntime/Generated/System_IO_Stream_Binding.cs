@@ -22,33 +22,18 @@ namespace ILRuntime.Runtime.Generated
             FieldInfo field;
             Type[] args;
             Type type = typeof(System.IO.Stream);
-            args = new Type[]{};
-            method = type.GetMethod("Dispose", flag, null, args, null);
-            app.RegisterCLRMethodRedirection(method, Dispose_0);
             args = new Type[]{typeof(System.Int64)};
             method = type.GetMethod("set_Position", flag, null, args, null);
-            app.RegisterCLRMethodRedirection(method, set_Position_1);
+            app.RegisterCLRMethodRedirection(method, set_Position_0);
+            args = new Type[]{};
+            method = type.GetMethod("Dispose", flag, null, args, null);
+            app.RegisterCLRMethodRedirection(method, Dispose_1);
 
 
         }
 
 
-        static StackObject* Dispose_0(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
-        {
-            ILRuntime.Runtime.Enviorment.AppDomain __domain = __intp.AppDomain;
-            StackObject* ptr_of_this_method;
-            StackObject* __ret = ILIntepreter.Minus(__esp, 1);
-            ptr_of_this_method = ILIntepreter.Minus(__esp, 1);
-            System.IO.Stream instance_of_this_method;
-            instance_of_this_method = (System.IO.Stream)typeof(System.IO.Stream).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack));
-            __intp.Free(ptr_of_this_method);
-
-            instance_of_this_method.Dispose();
-
-            return __ret;
-        }
-
-        static StackObject* set_Position_1(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
+        static StackObject* set_Position_0(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
         {
             ILRuntime.Runtime.Enviorment.AppDomain __domain = __intp.AppDomain;
             StackObject* ptr_of_this_method;
@@ -61,6 +46,21 @@ namespace ILRuntime.Runtime.Generated
             __intp.Free(ptr_of_this_method);
 
             instance_of_this_method.Position = value;
+
+            return __ret;
+        }
+
+        static StackObject* Dispose_1(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
+        {
+            ILRuntime.Runtime.Enviorment.AppDomain __domain = __intp.AppDomain;
+            StackObject* ptr_of_this_method;
+            StackObject* __ret = ILIntepreter.Minus(__esp, 1);
+            ptr_of_this_method = ILIntepreter.Minus(__esp, 1);
+            System.IO.Stream instance_of_this_method;
+            instance_of_this_method = (System.IO.Stream)typeof(System.IO.Stream).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack));
+            __intp.Free(ptr_of_this_method);
+
+            instance_of_this_method.Dispose();
 
             return __ret;
         }

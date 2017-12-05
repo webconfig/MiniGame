@@ -52,9 +52,6 @@ namespace ILRuntime.Runtime.Generated
             args = new Type[]{typeof(System.IAsyncResult)};
             method = type.GetMethod("EndSend", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, EndSend_9);
-            args = new Type[]{typeof(System.Net.Sockets.SocketShutdown)};
-            method = type.GetMethod("Shutdown", flag, null, args, null);
-            app.RegisterCLRMethodRedirection(method, Shutdown_10);
 
             args = new Type[]{typeof(System.Net.Sockets.AddressFamily), typeof(System.Net.Sockets.SocketType), typeof(System.Net.Sockets.ProtocolType)};
             method = type.GetConstructor(flag, null, args, null);
@@ -341,24 +338,6 @@ namespace ILRuntime.Runtime.Generated
             __ret->ObjectType = ObjectTypes.Integer;
             __ret->Value = result_of_this_method;
             return __ret + 1;
-        }
-
-        static StackObject* Shutdown_10(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
-        {
-            ILRuntime.Runtime.Enviorment.AppDomain __domain = __intp.AppDomain;
-            StackObject* ptr_of_this_method;
-            StackObject* __ret = ILIntepreter.Minus(__esp, 2);
-            ptr_of_this_method = ILIntepreter.Minus(__esp, 1);
-            System.Net.Sockets.SocketShutdown how = (System.Net.Sockets.SocketShutdown)typeof(System.Net.Sockets.SocketShutdown).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack));
-            __intp.Free(ptr_of_this_method);
-            ptr_of_this_method = ILIntepreter.Minus(__esp, 2);
-            System.Net.Sockets.Socket instance_of_this_method;
-            instance_of_this_method = (System.Net.Sockets.Socket)typeof(System.Net.Sockets.Socket).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack));
-            __intp.Free(ptr_of_this_method);
-
-            instance_of_this_method.Shutdown(how);
-
-            return __ret;
         }
 
 
