@@ -34,9 +34,9 @@ public class AssetbundleLoader
         AssetBundle bundle = null;
         if (!_assetbundleDic.TryGetValue(bundle_name, out bundle))
         {
-            Debug.Log("PATH:" + ROOT_PATH + "/" + bundle_name);
+            //Debug.Log("PATH:" + ROOT_PATH + "/" + bundle_name);
             bundle = AssetBundle.LoadFromFile(ROOT_PATH + "/" + bundle_name);
-            Debug.Log("bundle:" + bundle);
+            //Debug.Log("bundle:" + bundle);
             _assetbundleDic.Add(bundle_name, bundle);
         }
 #endregion
