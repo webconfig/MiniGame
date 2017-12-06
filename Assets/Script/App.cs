@@ -174,7 +174,8 @@ public class App : MonoBehaviour
         }
         //此处调用初始化
         InitializeILRuntime();
-        ILRuntime.Runtime.Generated.CLRBindings.Initialize(appdomain);
+        //ILRuntime.Runtime.Generated.CLRBindings.Initialize(appdomain);
+        Assets.CommGen.Initialize(appdomain);
         OnHotFixLoaded();
     }
 
@@ -365,7 +366,7 @@ public class App : MonoBehaviour
         Debug.Log("路径：" + data_path);
 #if UNITY_EDITOR
         string ZipPath = string.Format("{0}/game/{1}", data_path, game);
-        using (var zf = ZipFile.Read(@"Assets/StreamingAssets/"+ game + ".zip"))
+        using (var zf = ZipFile.Read(@"Assets/StreamingAssets/" + game + ".zip"))
             zf.ExtractAll(ZipPath, ExtractExistingFileAction.OverwriteSilently);
 #elif UNITY_STANDALONE_WIN
                                 string game_path = string.Format("{0}/{1}", data_path, zip_game);
@@ -411,8 +412,8 @@ public class App : MonoBehaviour
                 }
                 string ZipFilePath = "";
 
-                byte[] datas = System.IO.File.ReadAllBytes(Application.streamingAssetsPath + @"/bin.zip");
-                ZipFilePath = string.Format("{0}/bin.zip", game_path);
+                byte[] datas = System.IO.File.ReadAllBytes(Application.streamingAssetsPath + @"/" + game + ".zip");
+                ZipFilePath = string.Format("{0}/" + game + ".zip", game_path);
 
                 File.WriteAllBytes(ZipFilePath, datas);
 
