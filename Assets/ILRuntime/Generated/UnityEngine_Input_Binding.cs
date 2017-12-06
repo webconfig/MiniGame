@@ -68,8 +68,6 @@ namespace ILRuntime.Runtime.Generated
             method = type.GetMethod("GetJoystickNames", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, GetJoystickNames_14);
             args = new Type[]{typeof(System.String)};
-            method = type.GetMethod("IsJoystickPreconfigured", flag, null, args, null);
-            app.RegisterCLRMethodRedirection(method, IsJoystickPreconfigured_15);
             args = new Type[]{typeof(System.Int32)};
             method = type.GetMethod("GetMouseButton", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, GetMouseButton_16);
@@ -411,23 +409,7 @@ namespace ILRuntime.Runtime.Generated
 
             return ILIntepreter.PushObject(__ret, __mStack, result_of_this_method);
         }
-
-        static StackObject* IsJoystickPreconfigured_15(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
-        {
-            ILRuntime.Runtime.Enviorment.AppDomain __domain = __intp.AppDomain;
-            StackObject* ptr_of_this_method;
-            StackObject* __ret = ILIntepreter.Minus(__esp, 1);
-            ptr_of_this_method = ILIntepreter.Minus(__esp, 1);
-            System.String joystickName = (System.String)typeof(System.String).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack));
-            __intp.Free(ptr_of_this_method);
-
-            var result_of_this_method = UnityEngine.Input.IsJoystickPreconfigured(joystickName);
-
-            __ret->ObjectType = ObjectTypes.Integer;
-            __ret->Value = result_of_this_method ? 1 : 0;
-            return __ret + 1;
-        }
-
+			
         static StackObject* GetMouseButton_16(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
         {
             ILRuntime.Runtime.Enviorment.AppDomain __domain = __intp.AppDomain;
