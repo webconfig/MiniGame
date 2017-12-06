@@ -112,6 +112,7 @@ namespace ILRuntime.Runtime.Generated
             UnityEngine_Renderer_Binding.Register(app);
             UnityEngine_Rigidbody2D_Binding.Register(app);
             UnityEngine_Screen_Binding.Register(app);
+            UnityEngine_Shader_Binding.Register(app);
             UnityEngine_SpriteRenderer_Binding.Register(app);
             UnityEngine_Sprite_Binding.Register(app);
             UnityEngine_Texture2D_Binding.Register(app);
@@ -125,6 +126,7 @@ namespace ILRuntime.Runtime.Generated
             UnityEngine_UI_Text_Binding.Register(app);
             UnityEngine_Vector2_Binding.Register(app);
             UnityEngine_Vector3_Binding.Register(app);
+
 
         }
     }
