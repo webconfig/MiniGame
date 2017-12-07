@@ -125,6 +125,7 @@ public class ILRuntimeCLRBinding
         str += GetStr("Assets/ILRuntime/Gen/UnityEvent");
         str += GetStr("Assets/ILRuntime/Gen/UnityUI");
         str += GetStr("Assets/ILRuntime/Gen/UnityPhy");
+        str += GetStr("Assets/ILRuntime/Gen/UnityRender");
         str += GetStr("Assets/ILRuntime/Gen/App");
         Debug.Log(str);
     }

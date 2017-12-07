@@ -53,6 +53,7 @@ namespace Assets
             System_Net_IPAddress_Binding.Register(app);
             System_Net_IPEndPoint_Binding.Register(app);
             System_Net_Sockets_Socket_Binding.Register(app);
+            UnityEngine_Behaviour_Binding.Register(app);
             UnityEngine_ImageConversion_Binding.Register(app);
             UnityEngine_Input_Binding.Register(app);
             UnityEngine_Mathf_Binding.Register(app);
@@ -90,6 +91,8 @@ namespace Assets
             UnityEngine_JointAngleLimits2D_Binding.Register(app);
             UnityEngine_JointMotor2D_Binding.Register(app);
             UnityEngine_Rigidbody2D_Binding.Register(app);
+            UnityEngine_Material_Binding.Register(app);
+            UnityEngine_Renderer_Binding.Register(app);
             App_Binding.Register(app);
             AssetbundleLoader_Binding.Register(app);
 #if UNITY_ANDROID
@@ -97,7 +100,9 @@ namespace Assets
 #endif
 #if UNITY_ANDROID
             UnityEngine_AndroidJavaObject_Binding.Register(app);
-#endif
+#endif
+
+
         }
     }
 }
