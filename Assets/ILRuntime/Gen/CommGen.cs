@@ -19,6 +19,7 @@ namespace Assets
             System_UInt32_Binding.Register(app);
             System_BitConverter_Binding.Register(app);
             System_Convert_Binding.Register(app);
+            System_IDisposable_Binding.Register(app);
             System_IO_MemoryStream_Binding.Register(app);
             System_IO_Stream_Binding.Register(app);
             System_Math_Binding.Register(app);
@@ -67,12 +68,14 @@ namespace Assets
             UnityEngine_Vector2_Binding.Register(app);
             UnityEngine_Vector3_Binding.Register(app);
             UnityEngine_Animation_Binding.Register(app);
+            UnityEngine_Animator_Binding.Register(app);
             UnityEngine_AudioClip_Binding.Register(app);
             UnityEngine_AudioSource_Binding.Register(app);
             UnityEngine_Camera_Binding.Register(app);
             UnityEngine_Component_Binding.Register(app);
             UnityEngine_Debug_Binding.Register(app);
             UnityEngine_GameObject_Binding.Register(app);
+            UnityEngine_ParticleSystem_Binding.Register(app);
             UnityEngine_RectTransform_Binding.Register(app);
             UnityEngine_Transform_Binding.Register(app);
             UnityEngine_Events_UnityEventBase_Binding.Register(app);
@@ -100,7 +103,7 @@ namespace Assets
 #endif
 #if UNITY_ANDROID
             UnityEngine_AndroidJavaObject_Binding.Register(app);
-#endif
+#endif
 
 
         }

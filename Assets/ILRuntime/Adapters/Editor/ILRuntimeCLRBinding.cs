@@ -65,6 +65,9 @@ public class ILRuntimeCLRBinding
         //===2
         //types.Add(typeof(UnityEngine.Random));
         //types.Add(typeof(UnityEngine.Rect));
+        //==3
+        //types.Add(typeof(UnityEngine.ParticleSystem));
+
         ////==
         //types.Add(typeof(GameObject));
         //types.Add(typeof(Transform));
@@ -75,6 +78,9 @@ public class ILRuntimeCLRBinding
         //types.Add(typeof(Camera));
         //types.Add(typeof(Component));
         //types.Add(typeof(Debug));
+        //==2
+        //types.Add(typeof(Animator));
+
         ////== unity ui
         //types.Add(typeof(UnityEngine.UI.Button));
         //types.Add(typeof(UnityEngine.UI.Image));
