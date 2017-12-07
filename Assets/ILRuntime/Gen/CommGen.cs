@@ -23,22 +23,57 @@ namespace Assets
             System_IO_MemoryStream_Binding.Register(app);
             System_IO_Stream_Binding.Register(app);
             System_Math_Binding.Register(app);
+            System_Collections_Generic_LinkedListNode_1_ILTypeInstance_Binding.Register(app);
+            System_Collections_Generic_LinkedList_1_ILTypeInstance_Binding.Register(app);
+            System_Collections_Generic_List_1_Byte_Array_Binding.Register(app);
+            System_Collections_Generic_List_1_Byte_Binding.Register(app);
             System_Collections_Generic_List_1_GameObject_Binding.Register(app);
             System_Collections_Generic_List_1_ILTypeInstance_Binding.Register(app);
             System_Collections_Generic_List_1_Int32_Binding.Register(app);
             System_Collections_Generic_List_1_Int64_Binding.Register(app);
+            System_Collections_Generic_List_1_List_1_GameObject_Binding.Register(app);
+            System_Collections_Generic_List_1_List_1_ILTypeInstance_Binding.Register(app);
+            System_Collections_Generic_List_1_List_1_Int32_Binding.Register(app);
+            System_Collections_Generic_List_1_Single_Array_Binding.Register(app);
             System_Collections_Generic_List_1_Single_Binding.Register(app);
+            System_Collections_Generic_List_1_Sprite_Binding.Register(app);
             System_Collections_Generic_List_1_String_Binding.Register(app);
             System_Collections_Generic_List_1_Vector2_Binding.Register(app);
             System_Collections_Generic_List_1_Vector3_Binding.Register(app);
             System_Collections_Queue_Binding.Register(app);
+            System_Collections_Generic_Dictionary_2_Int32_Dictionary_2_Int32_GameObject_Binding.Register(app);
+            System_Collections_Generic_Dictionary_2_Int32_Dictionary_2_Int32_GameObject_Binding_Enumerator_Int32_Dictionary_2_Int32_GameObject_Binding.Register(app);
+            System_Collections_Generic_Dictionary_2_Int32_Dictionary_2_Int32_ILTypeInstance_Binding.Register(app);
+            System_Collections_Generic_Dictionary_2_Int32_Dictionary_2_Int32_ILTypeInstance_Binding_Enumerator_Int32_Dictionary_2_Int32_ILTypeInstance_Binding.Register(app);
             System_Collections_Generic_Dictionary_2_Int32_GameObject_Binding.Register(app);
             System_Collections_Generic_Dictionary_2_Int32_ILTypeInstance_Binding.Register(app);
+            System_Collections_Generic_Dictionary_2_Int32_ILTypeInstance_Binding_ValueCollection_Int32_ILTypeInstance_Binding.Register(app);
+            System_Collections_Generic_Dictionary_2_Int32_ILTypeInstance_Binding_ValueCollection_Int32_ILTypeInstance_Binding_Enumerator_Int32_ILTypeInstance_Binding.Register(app);
+            System_Collections_Generic_Dictionary_2_Int32_Int32_Binding.Register(app);
+            System_Collections_Generic_Dictionary_2_Int32_List_1_GameObject_Binding.Register(app);
+            System_Collections_Generic_Dictionary_2_Int32_List_1_GameObject_Binding_Enumerator_Int32_List_1_GameObject_Binding.Register(app);
+            System_Collections_Generic_Dictionary_2_Int32_List_1_ILTypeInstance_Binding.Register(app);
+            System_Collections_Generic_Dictionary_2_Int32_List_1_ILTypeInstance_Binding_Enumerator_Int32_List_1_ILTypeInstance_Binding.Register(app);
+            System_Collections_Generic_Dictionary_2_String_Dictionary_2_String_GameObject_Binding.Register(app);
+            System_Collections_Generic_Dictionary_2_String_Dictionary_2_String_GameObject_Binding_Enumerator_String_Dictionary_2_String_GameObject_Binding.Register(app);
+            System_Collections_Generic_Dictionary_2_String_Dictionary_2_String_ILTypeInstance_Binding.Register(app);
+            System_Collections_Generic_Dictionary_2_String_Dictionary_2_String_ILTypeInstance_Binding_Enumerator_String_Dictionary_2_String_ILTypeInstance_Binding.Register(app);
+            System_Collections_Generic_Dictionary_2_String_GameObject_Binding.Register(app);
             System_Collections_Generic_Dictionary_2_String_ILTypeInstance_Binding.Register(app);
             System_Collections_Generic_Dictionary_2_String_ILTypeInstance_Binding_Enumerator_String_ILTypeInstance_Binding.Register(app);
+            System_Collections_Generic_Dictionary_2_String_List_1_GameObject_Binding.Register(app);
+            System_Collections_Generic_Dictionary_2_String_List_1_GameObject_Binding_Enumerator_String_List_1_GameObject_Binding.Register(app);
+            System_Collections_Generic_Dictionary_2_String_List_1_ILTypeInstance_Binding.Register(app);
+            System_Collections_Generic_Dictionary_2_String_List_1_ILTypeInstance_Binding_Enumerator_String_List_1_ILTypeInstance_Binding.Register(app);
+            System_Collections_Generic_KeyValuePair_2_Int32_Dictionary_2_Int32_GameObject_Binding.Register(app);
+            System_Collections_Generic_KeyValuePair_2_Int32_Dictionary_2_Int32_ILTypeInstance_Binding.Register(app);
+            System_Collections_Generic_KeyValuePair_2_Int32_List_1_GameObject_Binding.Register(app);
+            System_Collections_Generic_KeyValuePair_2_Int32_List_1_ILTypeInstance_Binding.Register(app);
+            System_Collections_Generic_KeyValuePair_2_String_Dictionary_2_String_GameObject_Binding.Register(app);
+            System_Collections_Generic_KeyValuePair_2_String_Dictionary_2_String_ILTypeInstance_Binding.Register(app);
             System_Collections_Generic_KeyValuePair_2_String_ILTypeInstance_Binding.Register(app);
-            System_Collections_Generic_LinkedListNode_1_ILTypeInstance_Binding.Register(app);
-            System_Collections_Generic_LinkedList_1_ILTypeInstance_Binding.Register(app);
+            System_Collections_Generic_KeyValuePair_2_String_List_1_GameObject_Binding.Register(app);
+            System_Collections_Generic_KeyValuePair_2_String_List_1_ILTypeInstance_Binding.Register(app);
             System_Threading_Interlocked_Binding.Register(app);
             System_Threading_Monitor_Binding.Register(app);
             System_Threading_Thread_Binding.Register(app);
@@ -55,9 +90,11 @@ namespace Assets
             System_Net_IPEndPoint_Binding.Register(app);
             System_Net_Sockets_Socket_Binding.Register(app);
             UnityEngine_Behaviour_Binding.Register(app);
+            UnityEngine_Color_Binding.Register(app);
             UnityEngine_ImageConversion_Binding.Register(app);
             UnityEngine_Input_Binding.Register(app);
             UnityEngine_Mathf_Binding.Register(app);
+            UnityEngine_Microphone_Binding.Register(app);
             UnityEngine_Object_Binding.Register(app);
             UnityEngine_Quaternion_Binding.Register(app);
             UnityEngine_Random_Binding.Register(app);
@@ -67,6 +104,8 @@ namespace Assets
             UnityEngine_Time_Binding.Register(app);
             UnityEngine_Vector2_Binding.Register(app);
             UnityEngine_Vector3_Binding.Register(app);
+            UnityEngine_WWWForm_Binding.Register(app);
+            UnityEngine_WWW_Binding.Register(app);
             UnityEngine_Animation_Binding.Register(app);
             UnityEngine_Animator_Binding.Register(app);
             UnityEngine_AudioClip_Binding.Register(app);
@@ -98,14 +137,13 @@ namespace Assets
             UnityEngine_Renderer_Binding.Register(app);
             App_Binding.Register(app);
             AssetbundleLoader_Binding.Register(app);
+            PressEventTrigger_Binding.Register(app);
 #if UNITY_ANDROID
             UnityEngine_AndroidJavaClass_Binding.Register(app);
 #endif
 #if UNITY_ANDROID
             UnityEngine_AndroidJavaObject_Binding.Register(app);
-#endif
-
-
+#endif
         }
     }
 }

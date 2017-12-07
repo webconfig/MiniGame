@@ -208,7 +208,7 @@ public class App : MonoBehaviour
         //====proto=======
         appdomain.RegisterCrossBindingAdaptor(new Adapt_IMessage());
         appdomain.DelegateManager.RegisterFunctionDelegate<Adapt_IMessage.Adaptor>();
-
+        appdomain.RegisterCrossBindingAdaptor(new CoroutineAdapter());
         LitJson.JsonMapper.RegisterILRuntimeCLRRedirection(appdomain);
     }
 
@@ -233,7 +233,6 @@ public class App : MonoBehaviour
         _run = -1;
         //Debug.Log("=====game over=======");
     }
-
     public void getPlayer1()
     {
         //Debug.Log("主工程getPlayer1接口");
@@ -330,7 +329,18 @@ public class App : MonoBehaviour
             Debug.Log("_ios_sdk 空");
         }
     }
-
+    public void commonFunction(string result)
+    {
+        //Debug.Log("主工程end");
+        if (_ios_sdk != null)
+        {
+            _ios_sdk.CommonFunction(result);
+        }
+        else
+        {
+            Debug.Log("CommonFunction 空");
+        }
+    }
     public void BackData(string data)
     {
         if (appdomain != null)
@@ -338,8 +348,6 @@ public class App : MonoBehaviour
             appdomain.Invoke("HotFix_Project.Main", "BackData", null, data);
         }
     }
-
-
     #endregion
 
 
