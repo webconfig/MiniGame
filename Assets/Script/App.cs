@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
 using Ionic.Zip;
 
 public class App : MonoBehaviour
@@ -15,6 +16,7 @@ public class App : MonoBehaviour
     }
 
     public GameObject Loading;
+    public Text text;
     public ILRuntime.Runtime.Enviorment.AppDomain appdomain;
     [System.NonSerialized]
     public int _run = 0;
@@ -27,6 +29,11 @@ public class App : MonoBehaviour
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 30;
         _instance = this;
+        if(!Loading.activeInHierarchy)
+        {
+            Loading.SetActive(true);
+        }
+        text.text = "Loading...";
     }
 
     void Start()
@@ -231,6 +238,8 @@ public class App : MonoBehaviour
     public void Over()
     {
         _run = -1;
+        Loading.gameObject.SetActive(true);
+        text.text = "";
         //Debug.Log("=====game over=======");
     }
     public void getPlayer1()
@@ -377,23 +386,23 @@ public class App : MonoBehaviour
         using (var zf = ZipFile.Read(@"Assets/StreamingAssets/" + game + ".zip"))
             zf.ExtractAll(ZipPath, ExtractExistingFileAction.OverwriteSilently);
 #elif UNITY_STANDALONE_WIN
-                                string game_path = string.Format("{0}/{1}", data_path, zip_game);
-                                if (!System.IO.Directory.Exists(game_path))
-                                {
-                                    System.IO.Directory.CreateDirectory(game_path);
-                                }
+                                        string game_path = string.Format("{0}/{1}", data_path, zip_game);
+                                        if (!System.IO.Directory.Exists(game_path))
+                                        {
+                                            System.IO.Directory.CreateDirectory(game_path);
+                                        }
 
-                                var loadDb2 = new WWW("file://" + Application.dataPath + "/StreamingAssets/bin.zip");
-                                while (!loadDb2.isDone) { }
-                                string ZipFilePath = string.Format("{0}/bin.zip", game_path, zip_game);
-                                File.WriteAllBytes(ZipFilePath, loadDb2.bytes);
-                                Debug.Log("zip_file_path:" + ZipFilePath);
+                                        var loadDb2 = new WWW("file://" + Application.dataPath + "/StreamingAssets/bin.zip");
+                                        while (!loadDb2.isDone) { }
+                                        string ZipFilePath = string.Format("{0}/bin.zip", game_path, zip_game);
+                                        File.WriteAllBytes(ZipFilePath, loadDb2.bytes);
+                                        Debug.Log("zip_file_path:" + ZipFilePath);
 
-                                //ZipUtil.Unzip(ZipFilePath, game_path);
-                                using (var zf = ZipFile.Read(ZipFilePath))
-                                 zf.ExtractAll(game_path, ExtractExistingFileAction.OverwriteSilently);
-                                    File.Delete(ZipFilePath);
-                                Debug.Log("Ok");
+                                        //ZipUtil.Unzip(ZipFilePath, game_path);
+                                        using (var zf = ZipFile.Read(ZipFilePath))
+                                         zf.ExtractAll(game_path, ExtractExistingFileAction.OverwriteSilently);
+                                            File.Delete(ZipFilePath);
+                                        Debug.Log("Ok");
 #elif UNITY_ANDROID
         string game_path = string.Format("{0}/game/{1}", data_path, game);
         if (!System.IO.Directory.Exists(game_path))
@@ -401,42 +410,41 @@ public class App : MonoBehaviour
             System.IO.Directory.CreateDirectory(game_path);
         }
 
-        var loadDb2 = new WWW("jar:file://" + Application.dataPath + "!/assets/bin.zip");
+        var loadDb2 = new WWW("jar:file://" + Application.dataPath + "!/assets/" + game + ".zip");
         while (!loadDb2.isDone) { }
-        string ZipFilePath = string.Format("{0}/bin.zip", game_path);
+        string ZipFilePath = string.Format("{0}/" + game + ".zip", game_path);
         File.WriteAllBytes(ZipFilePath, loadDb2.bytes);
         Debug.Log("zip_file_path:" + ZipFilePath);
 
-        //ZipUtil.Unzip(ZipFilePath, game_path);
         using (var zf = ZipFile.Read(ZipFilePath))
             zf.ExtractAll(game_path, ExtractExistingFileAction.OverwriteSilently);
         File.Delete(ZipFilePath);
         Debug.Log("Ok");
 #elif UNITY_IOS
-                string game_path = string.Format("{0}/game/{1}", data_path, game);
-                if (!System.IO.Directory.Exists(game_path))
-                {
-                    System.IO.Directory.CreateDirectory(game_path);
-                }
-                string ZipFilePath = "";
+                        string game_path = string.Format("{0}/game/{1}", data_path, game);
+                        if (!System.IO.Directory.Exists(game_path))
+                        {
+                            System.IO.Directory.CreateDirectory(game_path);
+                        }
+                        string ZipFilePath = "";
 
-                byte[] datas = System.IO.File.ReadAllBytes(Application.streamingAssetsPath + @"/" + game + ".zip");
-                ZipFilePath = string.Format("{0}/" + game + ".zip", game_path);
+                        byte[] datas = System.IO.File.ReadAllBytes(Application.streamingAssetsPath + @"/" + game + ".zip");
+                        ZipFilePath = string.Format("{0}/" + game + ".zip", game_path);
 
-                File.WriteAllBytes(ZipFilePath, datas);
+                        File.WriteAllBytes(ZipFilePath, datas);
 
-                using (var zf = ZipFile.Read(ZipFilePath))
-                    zf.ExtractAll(game_path, ExtractExistingFileAction.OverwriteSilently);
+                        using (var zf = ZipFile.Read(ZipFilePath))
+                            zf.ExtractAll(game_path, ExtractExistingFileAction.OverwriteSilently);
 
-                DirectoryInfo TheFolder = new DirectoryInfo(game_path);
-                //遍历文件
-                foreach (FileInfo NextFile in TheFolder.GetFiles())
-                {
-                    Debug.Log("file:" + NextFile.FullName);
-                }
+                        DirectoryInfo TheFolder = new DirectoryInfo(game_path);
+                        //遍历文件
+                        foreach (FileInfo NextFile in TheFolder.GetFiles())
+                        {
+                            Debug.Log("file:" + NextFile.FullName);
+                        }
 
-                File.Delete(ZipFilePath);
-                Debug.Log("Ok");
+                        File.Delete(ZipFilePath);
+                        Debug.Log("Ok");
 #endif
         Load(game);
     }
