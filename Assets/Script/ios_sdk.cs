@@ -26,6 +26,9 @@ public class ios_sdk
     private static extern void getServer();
 
     [DllImport("__Internal")]
+    private static extern void getGameId();
+
+    [DllImport("__Internal")]
     private static extern void end(string result);
 
      [DllImport("__Internal")]
@@ -78,6 +81,13 @@ public class ios_sdk
     {
 #if UNITY_IOS
          getPlayer2Pic();
+#endif
+    }
+
+    public void GetGameId()
+    {
+#if UNITY_IOS
+         getGameId();
 #endif
     }
 

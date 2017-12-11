@@ -3,6 +3,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using Ionic.Zip;
+using LitJson;
 
 public class App : MonoBehaviour
 {
@@ -326,6 +327,20 @@ public class App : MonoBehaviour
             Debug.Log("_ios_sdk 空");
         }
     }
+
+    public void getGameId()
+    {
+        //Debug.Log("主工程getServer");
+        if (_ios_sdk != null)
+        {
+            _ios_sdk.GetGameId();
+        }
+        else
+        {
+            Debug.Log("_ios_sdk 空");
+        }
+    }
+
     public void end(string result)
     {
         //Debug.Log("主工程end");
