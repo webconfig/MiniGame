@@ -17,6 +17,7 @@ public class App : MonoBehaviour
     }
 
     public GameObject Loading;
+    public NetBase network;
     public Text text;
     public ILRuntime.Runtime.Enviorment.AppDomain appdomain;
     [System.NonSerialized]
@@ -102,12 +103,32 @@ public class App : MonoBehaviour
         {//游戏结束
             _run = 0;
             AssetbundleLoader.Clear();//释放资源
+            EndNetWork();
             //Buffer.BlockCopy(buf, 20, msg_datas, 0, MsgSize);
             appdomain = null;
         }
         else if (_run > 0)
         {
+            if (network != null)
+            {
+                network.Update();
+            }
             App.Instance.appdomain.Invoke("HotFix_Project.Main", "Update", null, null);
+        }
+    }
+
+
+    public void InitNetWork(string ip,int port, float _HeartTime, float _DisConnTime, NetWorkType type)
+    {
+        EndNetWork();
+        network = new NetBase(ip,port, _HeartTime, _DisConnTime, type);
+    }
+    public void EndNetWork()
+    {
+        if(network!=null)
+        {
+            network.End();
+            network = null;
         }
     }
 
@@ -197,6 +218,9 @@ public class App : MonoBehaviour
                 ((Action)act)();
             });
         });
+        appdomain.DelegateManager.RegisterMethodDelegate<NetBase, System.Byte[], System.Int32>();
+        appdomain.DelegateManager.RegisterMethodDelegate<System.Boolean>();
+
         appdomain.DelegateManager.RegisterMethodDelegate<System.IAsyncResult>();
         appdomain.DelegateManager.RegisterDelegateConvertor<System.AsyncCallback>((act) =>
         {
