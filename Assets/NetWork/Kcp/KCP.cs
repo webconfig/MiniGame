@@ -115,19 +115,58 @@ public class KCP
         return (Int32)(later - earlier);
     }
 
+    /// <summary>
+    /// 分片
+    /// </summary>
     internal class Segment
     {
+        /// <summary>
+        /// 会话编号
+        /// </summary>
         internal UInt32 conv = 0;
+        /// <summary>
+        /// 区分分片的作用（IKCP_CMD_PUSH:数据分片 IKCP_CMD_ACK:ack分片 IKCP_CMD_WASK请求告知窗口大小 IKCP_CMD_WINS:告知窗口大小）
+        /// </summary>
         internal UInt32 cmd = 0;
+        /// <summary>
+        /// segment分片ID
+        /// </summary>
         internal UInt32 frg = 0;
+        /// <summary>
+        /// 剩余接收窗口大小(接收窗口大小-接收队列大小)
+        /// </summary>
         internal UInt32 wnd = 0;
+        /// <summary>
+        /// 发送时刻的时间戳
+        /// </summary>
         internal UInt32 ts = 0;
+        /// <summary>
+        /// 分片segment的序号
+        /// </summary>
         internal UInt32 sn = 0;
+        /// <summary>
+        /// 待接收消息序号(接收滑动窗口左端)
+        /// </summary>
         internal UInt32 una = 0;
+        /// <summary>
+        /// 下次超时重传的时间戳
+        /// </summary>
         internal UInt32 resendts = 0;
+        /// <summary>
+        /// 该分片的超时重传等待时间
+        /// </summary>
         internal UInt32 rto = 0;
+        /// <summary>
+        /// 收到ack时计算的该分片被跳过的累计次数
+        /// </summary>
         internal UInt32 faskack = 0;
+        /// <summary>
+        /// 发送分片的次数，每发送一次加一。
+        /// </summary>
         internal UInt32 xmit = 0;
+        /// <summary>
+        /// 数据
+        /// </summary>
         internal byte[] data;
 
         internal Segment(int size = 0)
@@ -194,6 +233,9 @@ public class KCP
 
     LinkedList<Segment> snd_queue_;
     LinkedList<Segment> rcv_queue_;
+    /// <summary>
+    /// 发送窗口
+    /// </summary>
     LinkedList<Segment> snd_buf_;
     LinkedList<Segment> rcv_buf_;
 
@@ -266,6 +308,13 @@ public class KCP
         return Recv(buffer, 0, buffer.Length);
     }
     // user/upper level recv: returns size, returns below zero for EAGAIN
+    /// <summary>
+    /// recv函数将接收消息队列中的数据包还原成原来的消息格式，通过buffer返回给调用者
+    /// </summary>
+    /// <param name="buffer"></param>
+    /// <param name="offset"></param>
+    /// <param name="len"></param>
+    /// <returns></returns>
     public int Recv(byte[] buffer, int offset, int len)
     {
         int ispeek = (len < 0 ? 1 : 0);
@@ -615,7 +664,14 @@ public class KCP
     {
         return Input(data, 0, data.Length);
     }
-    // when you received a low level packet (eg. UDP packet), call it
+
+    /// <summary>
+    /// 函数接收udp协议传过来的报文，把udp报文解码成kcp报文进行缓存。
+    /// </summary>
+    /// <param name="data"></param>
+    /// <param name="offset"></param>
+    /// <param name="size"></param>
+    /// <returns></returns>
     public int Input(byte[] data, int offset, int size)
     {
         UInt32 maxack = 0;
@@ -763,7 +819,9 @@ public class KCP
         return 0;
     }
 
-    // flush pending data
+    /// <summary>
+    /// 将发送队列中的数据通过下层协议（UDP）进行发送
+    /// </summary>
     void Flush()
     {
         int change = 0;
@@ -964,6 +1022,7 @@ public class KCP
             cwnd_ = ssthresh_ + resent;
             incr_ = cwnd_ * mss_;
             //game.Instance.Add("change");
+            //App.Instance.AddMsg("发送窗口改变");
         }
 
         //如果发生的超时重传，那么就重新进入慢启动状态。
@@ -974,6 +1033,7 @@ public class KCP
                 ssthresh_ = IKCP_THRESH_MIN;
             cwnd_ = 1;
             incr_ = mss_;
+            //App.Instance.AddMsg("发送丢包");
             //game.Instance.Add("lost");
         }
 

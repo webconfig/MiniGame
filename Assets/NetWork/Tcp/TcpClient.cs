@@ -20,11 +20,11 @@ public class TcpClient
     //==数据
     private int BufferSize = 1024;
     private List<byte[]> RecvBuffer_Add;
-    private List<byte> RecvBuffer;
+    private byte[] RecvBuffer, RecvBuffer1, RecvBuffer2;
+    private int buff_index = 1;
     private byte[] buffer;
     public Action<bool> ConnectResultEvent;
     public Action DisConnectEvent;
-    private int RunState = 0;
     public bool has_send = false, has_recv = false;
     public float last_send = 0, Last_recv = 0;
     public int state = 0;
@@ -32,9 +32,11 @@ public class TcpClient
     public TcpClient(NetBase _parent)
     {
         this.buffer = new byte[BufferSize];
-        RecvBuffer = new List<byte>();
+        RecvBuffer1 = new byte[BufferSize * 5];
+        RecvBuffer2 = new byte[BufferSize * 5];
+        buff_index = 1;
+        RecvBuffer = RecvBuffer1;
         RecvBuffer_Add = new List<byte[]>();
-
         parent = _parent;
     }
 
@@ -185,7 +187,7 @@ public class TcpClient
     }
 
     Int32 DataSize = 0, id = 0, protocol = 0, body_key = 0, MsgSize = 0, cmd = 0;
-    byte[] int_data = new byte[4];
+    private int RecvOffset = 0, PackOffset = 0, PackLength = 0, buff_data_size, buff_total_size, total_length;
     /// <summary>
     /// 处理数据
     /// </summary>
@@ -197,22 +199,54 @@ public class TcpClient
             {
                 for (int i = 0; i < RecvBuffer_Add.Count; i++)
                 {
-                    for (int j = 0; j < RecvBuffer_Add[i].Length; j++)
-                    {
-                        RecvBuffer.Add(RecvBuffer_Add[i][j]);
+                    total_length = RecvOffset + RecvBuffer_Add[i].Length;
+                    if (total_length > RecvBuffer.Length)
+                    {//接受的数据超过缓冲区
+                        //Debug.Log("==接受的数据超过缓冲区==");
+                        buff_data_size = RecvOffset - PackOffset;
+                        buff_total_size = RecvBuffer_Add[i].Length + buff_data_size;
+                        if (buff_total_size > BufferSize)
+                        {
+                            BufferSize = buff_total_size;
+                        }
+                        if (buff_index == 1)
+                        {
+                            if (buff_data_size > 0)
+                            {
+                                Buffer.BlockCopy(RecvBuffer, PackOffset, RecvBuffer2, 0, buff_data_size);
+                            }
+                            RecvBuffer = RecvBuffer2;
+                            buff_index = 2;
+                        }
+                        else
+                        {
+                            if (buff_data_size > 0)
+                            {
+                                Buffer.BlockCopy(RecvBuffer, PackOffset, RecvBuffer1, 0, buff_data_size);
+                            }
+                            RecvBuffer = RecvBuffer1;
+                            buff_index = 1;
+                        }
+                        PackOffset = 0;
+                        RecvOffset = buff_data_size;
                     }
+
+                    //===拷贝数据到缓存===
+                    Buffer.BlockCopy(RecvBuffer_Add[i], 0, RecvBuffer, RecvOffset, RecvBuffer_Add[i].Length);
+                    RecvOffset += RecvBuffer_Add[i].Length;
+                    PackLength = RecvOffset - PackOffset;//接受数据的长度
                 }
                 RecvBuffer_Add.Clear();
             }
         }
-        if (RecvBuffer.Count >= 20)
+        if (PackLength >= 20)
         {
             for (int i = 0; i < 10; i++)
             {
-                if (RecvBuffer.Count >= 20)
+                if (PackLength >= 20)
                 {
                     DataSize = 0; id = 0; protocol = 0; body_key = 0; MsgSize = 0; cmd = 0;
-                    BytesToInt(RecvBuffer, 0, ref DataSize);//包长度
+                    DataSize = BitConverter.ToInt32(RecvBuffer, PackOffset);//包长度
 
                     if (DataSize < 20)
                     {
@@ -220,26 +254,28 @@ public class TcpClient
                         return;
                     }
 
-                    if (DataSize <= RecvBuffer.Count)//包长度小于于接受数据长度
+                    if (DataSize <= RecvBuffer.Length)//包长度小于于接受数据长度
                     {
-                        BytesToInt(RecvBuffer, 4, ref id);
-                        BytesToInt(RecvBuffer, 8, ref protocol);
-                        BytesToInt(RecvBuffer, 12, ref cmd);//命令
-                        BytesToInt(RecvBuffer, 16, ref body_key);//
+                        id = BitConverter.ToInt32(RecvBuffer, PackOffset+4);
+                        protocol = BitConverter.ToInt32(RecvBuffer, PackOffset+8);
+                        cmd = BitConverter.ToInt32(RecvBuffer, PackOffset+12);
+                        body_key = BitConverter.ToInt32(RecvBuffer, PackOffset+16);
 
                         MsgSize = DataSize - 20;//消息体长度
                         if (MsgSize > 0)
                         {
-                            byte[] msg_datas = new byte[MsgSize];
-                            RecvBuffer.CopyTo(20, msg_datas, 0, (int)MsgSize);
+                            byte[] msg_datas = GetBytes(MsgSize);
+                            Buffer.BlockCopy(RecvBuffer, PackOffset+20, msg_datas, 0, MsgSize);
                             parent.Handle(id, cmd, msg_datas);
+                            BackBytes(msg_datas);
                         }
                         else
                         {
                             UnityEngine.Debug.Log("2222DataSize:" + DataSize + ",id:" + id + ",protocol:" + protocol + ",cmd:" + cmd + ",body_key:" + body_key + ",MsgSize:" + MsgSize);
-                            UnityEngine.Debug.LogError("数据错误：" + DataSize + "--" + RecvBuffer.Count);
                         }
-                        RecvBuffer.RemoveRange(0, DataSize);
+                        //==========
+                        PackOffset += DataSize;
+                        PackLength = RecvOffset - PackOffset;
                     }
                     else
                     {
@@ -252,15 +288,6 @@ public class TcpClient
                 }
             }
         }
-    }
-
-    public void BytesToInt(List<byte> data, int offset, ref Int32 num)
-    {
-        for (int i = 0; i < 4; i++)
-        {
-            int_data[i] = data[offset + i];
-        }
-        num = BitConverter.ToInt32(int_data, 0);
     }
     #endregion
 
@@ -336,6 +363,30 @@ public class TcpClient
     }
     #endregion
 
+    public Dictionary<int, List<byte[]>> byte_pools = new Dictionary<int, List<byte[]>>();
+    public byte[] GetBytes(int num)
+    {
+        byte[] item = null;
+        if (byte_pools.ContainsKey(num))
+        {
+            if (byte_pools[num].Count > 0)
+            {
+                item = byte_pools[num][0];
+                byte_pools[num].RemoveAt(0);
+                return item;
+            }
+        }
+        item = new byte[num];
+        return item;
+    }
+    public void BackBytes(byte[] data)
+    {
+        if (!byte_pools.ContainsKey(data.Length))
+        {
+            byte_pools.Add(data.Length, new List<byte[]>());
+        }
+        byte_pools[data.Length].Add(data);
+    }
     public void Update()
     {
         //Debug.Log("tcp state:" + state);
@@ -356,8 +407,6 @@ public class TcpClient
             }
         }
     }
-
-
     public void End()
     {
         if (state != -100)
@@ -367,11 +416,16 @@ public class TcpClient
             parent = null;
             //==
             RecvBuffer_Add = null;
+            RecvBuffer1 = null;
+            RecvBuffer2 = null;
             RecvBuffer = null;
             buffer = null;
             ConnectResultEvent = null;
             DisConnectEvent = null;
-
+            if(byte_pools!=null)
+            {
+                byte_pools = null;
+            }
             //==
             if (socket != null)
             {

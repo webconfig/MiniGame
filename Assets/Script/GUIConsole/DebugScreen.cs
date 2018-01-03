@@ -16,7 +16,7 @@ public class DebugScreen : MonoBehaviour
 		S.normal.background = null;
 		S.fontSize = 40;
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
-        Application.targetFrameRate = FPS;
+        //Application.targetFrameRate = 60;
     }
 
     // Update is called once per frame

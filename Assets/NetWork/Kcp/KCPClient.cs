@@ -50,17 +50,18 @@ public class KCPClient
     private byte[] heart_data;
 
 
-
+    private int BufferSize = 1024;
     private List<byte[]> RecvBuffer_Add;
-    private List<byte> RecvBuffer;
-    private object buff_obj = new object();
-
+    private byte[] RecvBuffer, RecvBuffer1, RecvBuffer2;
+    private int buff_index = 1;
 
     public KCPClient(NetBase _parent)
     {
         RecvBuffer_Add = new List<byte[]>();
-        RecvBuffer = new List<byte>();
-
+        RecvBuffer1 = new byte[BufferSize * 5];
+        RecvBuffer2 = new byte[BufferSize * 5];
+        buff_index = 1;
+        RecvBuffer = RecvBuffer1;
         parent = _parent;
 
         //pkgCSHeartBeatReq heart = new pkgCSHeartBeatReq();
@@ -79,8 +80,17 @@ public class KCPClient
     public void Connect(string host, int port, uint index)
     {
         m_RecvQueue = new SwitchQueue<byte[]>(128);
-
-        socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp); //创建socket  
+        IPAddress[] address = Dns.GetHostAddresses(host);
+        if (address[0].AddressFamily == AddressFamily.InterNetworkV6)
+        {
+            //Debug.Log("Connect InterNetworkV6");
+            socket = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Udp);
+        }
+        else
+        {
+            //Debug.Log("Connect InterNetwork");
+            socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Udp);
+        }
         socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, 5000);
         srvAddr = IPAddress.Parse(host); //服务器IP地址  
         srvIpEnd = new IPEndPoint(srvAddr, port); //服务器地址 
@@ -94,7 +104,41 @@ public class KCPClient
             ConnectResultEvent(true);
         }
     }
-
+    public void Disconnect()
+    {
+        if (DisConnectEvent != null)
+        {
+            DisConnectEvent();
+        }
+        CloseNetwork();
+    }
+    private void CloseNetwork()
+    {
+        state = -1;
+        try
+        {
+            if (socket != null)
+            {
+                try
+                {
+                    socket.Close();
+                }
+                catch { }
+                socket = null;
+            }
+        }
+        catch { }
+        try
+        {
+            if (recvThraed != null)
+            {
+                recvThraed.Abort();
+                recvThraed = null;
+            }
+        }
+        catch
+        { }
+    }
     /// <summary>
     /// 初始化kcp
     /// </summary>
@@ -104,11 +148,11 @@ public class KCPClient
         m_Kcp = new KCP(conv, null);
         m_Kcp.SetOutput((byte[] buf, int size, object user) =>
         {
-                //UnityEngine.Main.Debug("send:" + size);
-                try
+            //UnityEngine.Main.Debug("send:" + size);
+            try
             {
-                    //UnityEngine.Main.Debug("kcp send:" + size);
-                    socket.SendTo(buf, 0, size, SocketFlags.None, srvIpEnd);
+                //UnityEngine.Main.Debug("kcp send:" + size);
+                socket.SendTo(buf, 0, size, SocketFlags.None, srvIpEnd);
                 if (index == 2)
                 {
                     index = 1;
@@ -116,12 +160,12 @@ public class KCPClient
             }
             catch (Exception ex)
             {
-                    //Main.Debug("send errror:" + ex.ToString());
-                    NetError();
+                //Main.Debug("send errror:" + ex.ToString());
+                NetError();
             }
         });
 
-        m_Kcp.NoDelay(1, 20, 2, 1);
+        m_Kcp.NoDelay(1, 10, 2, 1);
         m_Kcp.WndSize(128, 128);
     }
 
@@ -130,6 +174,7 @@ public class KCPClient
     {
         //Main.Debug("StartRrcv");
         index = 0;
+        lock (RecvBuffer_Add){ }
         recvThraed = new Thread(OnRecievedData);
         recvThraed.Start();
     }
@@ -143,25 +188,13 @@ public class KCPClient
             {
                 if (index == 0)
                 {
-                    //加入房间
-                    //pkgCSJoinRoomReq request = new pkgCSJoinRoomReq();
-                    //request.Iroomid = Main.game.room_id;
-                    //request.UserId = (int)Main.game.player_1.id;
-                    //request.Token = Main.game.Token;
-
-                    //var mem = new MemoryStream();
-                    //request.WriteTo(mem);
-                    //mem.Position = 0;
-                    //byte[] datas = mem.ToArray();
-                    //mem.Dispose();
-                    //Send(Main.game.player_1.id, 0, (int)ProtocolCmd.CsjoinRoomReq, datas);
-                    //Main.Debug("发送请求房间ok");
                     recvBuf = new byte[DEF_SIZE]; //接收缓冲区大小  
                     index = 2;
                 }
                 else if (index == 1)
                 {
                     result = socket.ReceiveFrom(recvBuf, ref srvEnd);
+                    //App.Instance.AddNetWork(result);
                     if (result > 0)
                     {
                         if (result > recvBuf.Length)
@@ -202,20 +235,14 @@ public class KCPClient
     }
     private void Recv(byte[] buf)
     {
-        //UInt32 DataSize = BitConverter.ToUInt32(buf, 0);//包长度
-        //UInt32 id = BitConverter.ToUInt32(buf, 4);//id
-        //UInt32 protocol = BitConverter.ToUInt32(buf, 8);//id
-        //Int32 cmd = BitConverter.ToInt32(buf, 12);//id
-        //UInt32 body_key = BitConverter.ToUInt32(buf, 16);//id
-        //UnityEngine.Main.Debug("1111DataSize:" + DataSize + ",id:" + id + ",protocol:" + protocol + ",cmd:" + cmd + ",body_key:" + body_key + ",MsgSize:" + MsgSize);
-        lock (buff_obj)
+        lock (RecvBuffer_Add)
         {
             RecvBuffer_Add.Add(buf);
         }
     }
 
     Int32 DataSize = 0, id = 0, protocol = 0, body_key = 0, MsgSize = 0, cmd = 0;
-    byte[] int_data = new byte[4];
+    private int RecvOffset = 0, PackOffset = 0, PackLength = 0, buff_data_size, buff_total_size, total_length;
     /// <summary>
     /// 处理数据
     /// </summary>
@@ -223,47 +250,87 @@ public class KCPClient
     {
         if (RecvBuffer_Add.Count > 0)
         {
-            lock (buff_obj)
+            lock (RecvBuffer_Add)
             {
                 for (int i = 0; i < RecvBuffer_Add.Count; i++)
                 {
-                    for (int j = 0; j < RecvBuffer_Add[i].Length; j++)
-                    {
-                        RecvBuffer.Add(RecvBuffer_Add[i][j]);
+                    total_length = RecvOffset + RecvBuffer_Add[i].Length;
+                    if (total_length > RecvBuffer.Length)
+                    {//接受的数据超过缓冲区
+                        //Debug.Log("==接受的数据超过缓冲区==");
+                        buff_data_size = RecvOffset - PackOffset;
+                        buff_total_size = RecvBuffer_Add[i].Length + buff_data_size;
+                        if (buff_total_size > BufferSize)
+                        {
+                            BufferSize = buff_total_size;
+                        }
+                        if (buff_index == 1)
+                        {
+                            if (buff_data_size > 0)
+                            {
+                                Buffer.BlockCopy(RecvBuffer, PackOffset, RecvBuffer2, 0, buff_data_size);
+                            }
+                            RecvBuffer = RecvBuffer2;
+                            buff_index = 2;
+                        }
+                        else
+                        {
+                            if (buff_data_size > 0)
+                            {
+                                Buffer.BlockCopy(RecvBuffer, PackOffset, RecvBuffer1, 0, buff_data_size);
+                            }
+                            RecvBuffer = RecvBuffer1;
+                            buff_index = 1;
+                        }
+                        PackOffset = 0;
+                        RecvOffset = buff_data_size;
                     }
+
+                    //===拷贝数据到缓存===
+                    Buffer.BlockCopy(RecvBuffer_Add[i], 0, RecvBuffer, RecvOffset, RecvBuffer_Add[i].Length);
+                    RecvOffset += RecvBuffer_Add[i].Length;
+                    PackLength = RecvOffset - PackOffset;//接受数据的长度
                 }
                 RecvBuffer_Add.Clear();
             }
         }
-        if (RecvBuffer.Count >= 20)
+        if (PackLength >= 20)
         {
             for (int i = 0; i < 10; i++)
             {
-                if (RecvBuffer.Count >= 20)
+                if (PackLength >= 20)
                 {
                     DataSize = 0; id = 0; protocol = 0; body_key = 0; MsgSize = 0; cmd = 0;
-                    BytesToInt(RecvBuffer, 0, ref DataSize);//包长度
-                    if (DataSize <= RecvBuffer.Count)//包长度小于于接受数据长度
+                    DataSize = BitConverter.ToInt32(RecvBuffer, PackOffset);//包长度
+
+                    if (DataSize < 20)
                     {
-                        BytesToInt(RecvBuffer, 4, ref id);
-                        BytesToInt(RecvBuffer, 8, ref protocol);
-                        BytesToInt(RecvBuffer, 12, ref cmd);//命令
-                        BytesToInt(RecvBuffer, 16, ref body_key);//
+                        Disconnect();
+                        return;
+                    }
+
+                    if (DataSize <= RecvBuffer.Length)//包长度小于于接受数据长度
+                    {
+                        id = BitConverter.ToInt32(RecvBuffer, PackOffset + 4);
+                        protocol = BitConverter.ToInt32(RecvBuffer, PackOffset + 8);
+                        cmd = BitConverter.ToInt32(RecvBuffer, PackOffset + 12);
+                        body_key = BitConverter.ToInt32(RecvBuffer, PackOffset + 16);
 
                         MsgSize = DataSize - 20;//消息体长度
-                                                //UnityEngine.Main.Debug("2222DataSize:" + DataSize + ",id:" + id + ",protocol:" + protocol + ",cmd:" + cmd + ",body_key:" + body_key + ",MsgSize:" + MsgSize);
                         if (MsgSize > 0)
                         {
-                            byte[] msg_datas = new byte[MsgSize];
-                            RecvBuffer.CopyTo(20, msg_datas, 0, (int)MsgSize);
+                            byte[] msg_datas = GetBytes(MsgSize);
+                            Buffer.BlockCopy(RecvBuffer, PackOffset + 20, msg_datas, 0, MsgSize);
                             parent.Handle(id, cmd, msg_datas);
+                            BackBytes(msg_datas);
                         }
                         else
                         {
-                            //Main.Debug("2222DataSize:" + DataSize + ",id:" + id + ",protocol:" + protocol + ",cmd:" + cmd + ",body_key:" + body_key + ",MsgSize:" + MsgSize);
-                            //Main.DebugError("数据错误：" + DataSize + "--" + RecvBuffer.Count);
+                            UnityEngine.Debug.Log("2222DataSize:" + DataSize + ",id:" + id + ",protocol:" + protocol + ",cmd:" + cmd + ",body_key:" + body_key + ",MsgSize:" + MsgSize);
                         }
-                        RecvBuffer.RemoveRange(0, DataSize);
+                        //==========
+                        PackOffset += DataSize;
+                        PackLength = RecvOffset - PackOffset;
                     }
                     else
                     {
@@ -277,16 +344,6 @@ public class KCPClient
             }
         }
     }
-
-    public void BytesToInt(List<byte> data, int offset, ref Int32 num)
-    {
-        for (int i = 0; i < 4; i++)
-        {
-            int_data[i] = data[offset + i];
-        }
-        num = BitConverter.ToInt32(int_data, 0);
-    }
-
     void process_recv_queue()
     {
         m_RecvQueue.Switch();
@@ -325,18 +382,18 @@ public class KCPClient
         if (state > 0)
         {
             //UnityEngine.Main.Debug("m_LastSendTimestamp:" + m_LastSendTimestamp+"---"+(UnityEngine.Time.time - m_LastSendTimestamp));
-            if (m_LastSendTimestamp > 0 && UnityEngine.Time.time - m_LastSendTimestamp > 1)
+            if (m_LastSendTimestamp > 0 && UnityEngine.Time.time - m_LastSendTimestamp > parent.HeartTime)
             {//超过1秒没发生数据，发送心跳包
                 m_LastSendTimestamp = UnityEngine.Time.time;
-                Send(heart_data);
+                parent.SendHeart();
             }
             //if (UnityEngine.Time.time - m_LastRecvTimestamp > 5)
             //{//超过5秒没收到数据，短线
-            //   Main.Debug("超过5秒没收到数据，短线");
+            //    Main.Debug("超过5秒没收到数据，短线");
             //    NetError();
             //}
         }
-        //Main.Debug("222222222222222");
+        //处理数据
         process_recv_queue();
         if (m_Kcp != null)
         {
@@ -422,6 +479,30 @@ public class KCPClient
     }
     #endregion
 
+    public Dictionary<int, List<byte[]>> byte_pools = new Dictionary<int, List<byte[]>>();
+    public byte[] GetBytes(int num)
+    {
+        byte[] item = null;
+        if (byte_pools.ContainsKey(num))
+        {
+            if (byte_pools[num].Count > 0)
+            {
+                item = byte_pools[num][0];
+                byte_pools[num].RemoveAt(0);
+                return item;
+            }
+        }
+        item = new byte[num];
+        return item;
+    }
+    public void BackBytes(byte[] data)
+    {
+        if (!byte_pools.ContainsKey(data.Length))
+        {
+            byte_pools.Add(data.Length, new List<byte[]>());
+        }
+        byte_pools[data.Length].Add(data);
+    }
     /// <summary>
     /// 网络异常关闭
     /// </summary>
@@ -443,26 +524,36 @@ public class KCPClient
         if (state != -100)
         {
             state = -100;
+            m_NeedUpdateFlag = false;
+
+            RecvBuffer_Add = null;
+            RecvBuffer1 = null;
+            RecvBuffer2 = null;
+            RecvBuffer = null;
+            recvBuf = null;
+
+            ConnectResultEvent = null;
+            DisConnectEvent = null;
+            server_addr = null;
+            if (byte_pools != null)
+            {
+                byte_pools = null;
+            }
             if (socket != null)
             {
                 socket.Close();
                 socket = null;
-            }
-            if (recvThraed != null)
-            {
-                recvThraed.Abort();
-                recvThraed = null;
             }
             if (m_Kcp != null)
             {
                 m_Kcp.Release();
                 m_Kcp = null;
             }
-            m_NeedUpdateFlag = false;
-            recvBuf = null;
-            ConnectResultEvent = null;
-            DisConnectEvent = null;
-            server_addr = null;
+            if (recvThraed != null)
+            {
+                recvThraed.Abort();
+                recvThraed = null;
+            }
         }
     }
 }
