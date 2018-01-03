@@ -77,7 +77,7 @@ public class TcpClient
         {
             socket.EndConnect(result);
             state = 10;
-            StartRrcv();
+            //StartRrcv();
             if (ConnectResultEvent != null)
             {
                 ConnectResultEvent(true);
@@ -139,7 +139,7 @@ public class TcpClient
     #region 接收数据
     public void StartRrcv()
     {
-        Debug.Log("开始接受数据");
+        Debug.LogError("开始接受数据");
         lock (RecvBuffer_Add) { }
         recvThraed = new Thread(ProcessReceive);
         recvThraed.Start();
