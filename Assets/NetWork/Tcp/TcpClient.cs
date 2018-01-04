@@ -77,7 +77,7 @@ public class TcpClient
         {
             socket.EndConnect(result);
             state = 10;
-            //StartRrcv();
+            StartRrcv();
             if (ConnectResultEvent != null)
             {
                 ConnectResultEvent(true);
