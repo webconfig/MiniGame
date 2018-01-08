@@ -9,11 +9,13 @@ public class NetBase
 {
     public TcpClient tcp;
     public KCPClient kcp = null;
+    public UdpClient udp = null;
 
     public string ip;
     public int port;
+    public int udp_port;
 
-    public float DisConnTime = 3, HeartTime=1;
+    public float DisConnTime = 3, HeartTime = 1;
 
     public NetWorkType type;
     /// <summary>
@@ -32,7 +34,7 @@ public class NetBase
         type = _type;
         DisConnTime = _DisConnTime;
         HeartTime = _HeartTime;
-
+        lock (msg_obj){ }
         switch (type)
         {
             case NetWorkType.Kcp:
@@ -72,8 +74,9 @@ public class NetBase
             ConnectResultEvent(t);
         }
     }
-    private void DisConn()
+    public void DisConn()
     {
+        Debug.LogError("==dis conn==");
         if (DisConnectEvent != null)
         {
             DisConnectEvent();
@@ -81,28 +84,140 @@ public class NetBase
     }
     #endregion
 
+    #region udp
+    public void RunUdp(int _udp_port)
+    {
+        udp_port = _udp_port;
+        udp = new UdpClient(this);
+    }
+    public void ConnUdp()
+    {
+        udp.Connect(ip, udp_port);
+    }
+    public void StartRecvUdp()
+    {
+        udp.StartRrcv();
+    }
+    public void UdpSend(UInt32 id, UInt32 protocol, Int32 cmd, byte[] datas)
+    {
+        udp.Send(id, protocol, cmd, datas);
+    }
+    public int UdpSend(byte[] datas)
+    {
+       return  udp.Send(datas);
+    }
+    #endregion
+
+    public object has_send_obj = new object();
+    public bool has_send = false, has_recv = false;
+    private float last_send = 0, Last_recv = 0;
+    private object msg_obj = new object();
+    public List<MsgData> msgs = new List<MsgData>();
+    public List<MsgData> msgs_all = new List<MsgData>();
+
+
+    public void HasSend()
+    {
+        lock (has_send_obj)
+        {
+            has_send = true;
+        }
+    }
+    public void HasRecv(MsgData obj)
+    {
+        lock (msg_obj)
+        {
+            msgs.Add(obj);
+        }
+    }
+    /// <summary>
+    /// 处理数据
+    /// </summary>
+    private void DealData()
+    {
+        lock (msg_obj)
+        {
+            if (msgs.Count > 0)
+            {
+                msgs_all.AddRange(msgs);
+                msgs.Clear();
+            }
+            has_recv = true;
+        }
+        if (msgs_all.Count > 0)
+        {
+            for (int i = 0; i < msgs_all.Count; i++)
+            {
+                Handle(msgs_all[i].id, msgs_all[i].cmd, msgs_all[i].datas);
+            }
+            BackMsg(msgs_all);
+            msgs_all.Clear();
+        }
+    }
     public void Update()
     {
-        switch (type)
+        if (state > 0)
         {
-            case NetWorkType.Kcp:
-                if (kcp != null)
-                {
-                    kcp.Update();
-                }
-                break;
-            case NetWorkType.Tcp:
-                if (tcp != null)
-                {
-                    tcp.Update();
-                }
-                break;
+            DealData();
+            if (has_send) { has_send = false; last_send = Time.time; }
+            if (has_recv) { has_recv = false; Last_recv = Time.time; }
+            if ((last_send > 0) && ((Time.time - last_send) >= HeartTime))
+            {//没间隔1秒发一个心跳包
+                SendHeart();
+            }
+            if ((Last_recv > 0) && ((Time.time - Last_recv) >= DisConnTime))
+            {//居然间隔9秒都没有数据，断线了
+                Debug.LogError("=======居然间隔6秒都没有数据，断线了:" + (Last_recv - last_send));
+                Last_recv = -1;
+                DisConn();
+            }
         }
     }
 
+    #region pool
+    public List<MsgData> msg_pool = new List<MsgData>();
+    private object msg_pool_obj = new object();
+    public MsgData GetMsg()
+    {
+        lock (msg_pool_obj)
+        {
+            MsgData msg = null;
+            if (msg_pool.Count > 0)
+            {
+                msg = msg_pool[0];
+                msg_pool.RemoveAt(0);
+            }
+            else
+            {
+                msg = new MsgData();
+            }
+            return msg;
+        }
+    }
+    public void BackMsg(List<MsgData> items)
+    {
+        lock (msg_pool_obj)
+        {
+            msg_pool.AddRange(items);
+        }
+    }
+    public void ClearMsg()
+    {
+        lock (msg_pool_obj)
+        {
+            if (msg_pool != null)
+            {
+                msg_pool.Clear();
+                msg_pool = null;
+            }
+        }
+    }
+    #endregion
+
+
     public void SendHeart()
     {
-        if(HeartEvent!=null)
+        if (HeartEvent != null)
         {
             HeartEvent();
         }
@@ -225,6 +340,7 @@ public class NetBase
 
     public void End()
     {
+        Debug.Log("====end=====");
         switch (type)
         {
             case NetWorkType.Kcp:
