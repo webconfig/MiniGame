@@ -31,8 +31,6 @@ public class App : MonoBehaviour
 
     private void Awake()
     {
-        Int32 k = Convert.ToInt32("1b000000",16);
-        Debug.Log(k);
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         _instance = this;
         if (!Loading.activeInHierarchy)
@@ -40,14 +38,6 @@ public class App : MonoBehaviour
             Loading.SetActive(true);
         }
         text.text = "Loading...";
-    }
-    private byte[] HexStringToByteArray(string s)
-    {
-        s = s.Replace("   ", " ");
-        byte[] buffer = new byte[s.Length / 2];
-        for (int i = 0; i < s.Length; i += 2)
-            buffer[i / 2] = (byte)Convert.ToByte(s.Substring(i, 2), 16);
-        return buffer;
     }
 
     void Start()

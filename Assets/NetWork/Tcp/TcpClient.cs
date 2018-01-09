@@ -1,10 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Net.Sockets;
 using UnityEngine;
-using System.Collections.Generic;
 using System.Threading;
-using Google.Protobuf;
 using System.Net;
 
 /// <summary>
@@ -22,7 +19,7 @@ public class TcpClient
     private byte[] buffer;
     public Action<bool> ConnectResultEvent;
     public Action DisConnectEvent;
-    
+
     public TcpClient(NetBase _parent)
     {
         this.buffer = new byte[BufferSize];
@@ -83,27 +80,18 @@ public class TcpClient
             return;
         }
     }
-
-    public void ClearConnEvent()
-    {
-        ConnectResultEvent = null;
-    }
     private void CloseNetwork()
     {
         parent.state = -1;
-        try
+        if (socket != null)
         {
-            if (socket != null)
+            try
             {
-                try
-                {
-                    socket.Close();
-                }
-                catch { }
-                socket = null;
+                socket.Close();
             }
+            catch { }
+            socket = null;
         }
-        catch { }
         try
         {
             if (recvThraed != null)
@@ -145,7 +133,7 @@ public class TcpClient
                     parent.DisConn();
                     return;
                 }
-                MsgData msgData =parent.GetMsg();
+                MsgData msgData = parent.GetMsg();
                 DataSize = BitConverter.ToInt32(buffer, 0);//包长度
                 msgData.id = BitConverter.ToInt32(buffer, 4);
                 msgData.cmd = BitConverter.ToInt32(buffer, 12);
@@ -156,7 +144,7 @@ public class TcpClient
                 if (bytesRead <= 0)
                 {
                     Debug.Log("==接受协议内容 等于0退出==" + bytesRead);
-                    parent.DisConn(); 
+                    parent.DisConn();
                     return;
                 }
                 msgData.datas = new byte[MsgSize];

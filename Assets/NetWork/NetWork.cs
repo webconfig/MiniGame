@@ -34,7 +34,7 @@ public class NetBase
         type = _type;
         DisConnTime = _DisConnTime;
         HeartTime = _HeartTime;
-        lock (msg_obj){ }
+        lock (msg_obj) { }
         switch (type)
         {
             case NetWorkType.Kcp:
@@ -53,6 +53,7 @@ public class NetBase
     #region 连接
     public void Conn(uint conv)
     {
+        Clear();
         switch (type)
         {
             case NetWorkType.Kcp:
@@ -65,6 +66,8 @@ public class NetBase
     }
     public void ClearConnEvent()
     {
+        DisConnectEvent = null;
+        HeartEvent = null;
         ConnectResultEvent = null;
     }
     private void ConnectBack(bool t)
@@ -104,7 +107,7 @@ public class NetBase
     }
     public int UdpSend(byte[] datas)
     {
-       return  udp.Send(datas);
+        return udp.Send(datas);
     }
     #endregion
 
@@ -115,6 +118,21 @@ public class NetBase
     public List<MsgData> msgs = new List<MsgData>();
     public List<MsgData> msgs_all = new List<MsgData>();
 
+    private void Clear()
+    {
+        lock (msg_obj)
+        {
+            msgs.Clear();
+            has_recv = false;
+        }
+        msgs_all.Clear();
+        lock (has_send_obj)
+        {
+            has_send = false;
+        }
+        last_send = 0;
+        Last_recv = 0;
+    }
 
     public void HasSend()
     {
@@ -214,7 +232,6 @@ public class NetBase
     }
     #endregion
 
-
     public void SendHeart()
     {
         if (HeartEvent != null)
@@ -242,6 +259,7 @@ public class NetBase
                 break;
         }
     }
+
     public void Send(byte[] datas)
     {
         switch (type)
