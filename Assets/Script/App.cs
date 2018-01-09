@@ -216,7 +216,6 @@ public class App : MonoBehaviour
         //根据方法名称和参数个数获取方法
         method = type.GetMethod("Run", 0);
         method_update = type.GetMethod("Update", 0);
-        appdomain.Invoke(method, null, null);
     }
     private IMethod method,method_update;
     /// <summary>
