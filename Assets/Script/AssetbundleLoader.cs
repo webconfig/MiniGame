@@ -45,7 +45,7 @@ public class AssetbundleLoader
         int assetNameStart = path.LastIndexOf("/") + 1;
         int assetNameEnd = path.LastIndexOf(".");
         string assetName = path.Substring(assetNameStart, assetNameEnd - assetNameStart);
-        Debug.Log("assetName:" + assetName);
+        //Debug.Log("assetName:" + assetName);
         T obj = bundle.LoadAsset(assetName) as T;
         return obj;
 #endregion

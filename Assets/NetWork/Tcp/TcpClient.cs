@@ -133,6 +133,9 @@ public class TcpClient
                     parent.DisConn();
                     return;
                 }
+
+                //Debug.Log("==网络接收：" + bytesRead);
+
                 MsgData msgData = parent.GetMsg();
                 DataSize = BitConverter.ToInt32(buffer, 0);//包长度
                 msgData.id = BitConverter.ToInt32(buffer, 4);

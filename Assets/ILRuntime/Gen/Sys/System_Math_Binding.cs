@@ -22,7 +22,6 @@ namespace ILRuntime.Runtime.Generated
             FieldInfo field;
             Type[] args;
             Type type = typeof(System.Math);
-            UnityEngine.Debug.Log("111111");
             args = new Type[]{typeof(System.Decimal)};
             method = type.GetMethod("Abs", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, Abs_0);
@@ -44,7 +43,6 @@ namespace ILRuntime.Runtime.Generated
             args = new Type[]{typeof(System.Int16)};
             method = type.GetMethod("Abs", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, Abs_6);
-            UnityEngine.Debug.Log("3333");
             args = new Type[]{typeof(System.Decimal)};
             method = type.GetMethod("Ceiling", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, Ceiling_7);
@@ -72,8 +70,6 @@ namespace ILRuntime.Runtime.Generated
             args = new Type[]{typeof(System.Byte), typeof(System.Byte)};
             method = type.GetMethod("Max", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, Max_15);
-
-            UnityEngine.Debug.Log("math 1");
             args = new Type[]{typeof(System.Decimal), typeof(System.Decimal)};
             method = type.GetMethod("Max", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, Max_16);
@@ -137,9 +133,6 @@ namespace ILRuntime.Runtime.Generated
             args = new Type[]{typeof(System.UInt16), typeof(System.UInt16)};
             method = type.GetMethod("Min", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, Min_36);
-
-            UnityEngine.Debug.Log("math 2");
-
             args = new Type[]{typeof(System.Decimal)};
             method = type.GetMethod("Round", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, Round_37);
@@ -227,9 +220,6 @@ namespace ILRuntime.Runtime.Generated
             args = new Type[]{typeof(System.Double)};
             method = type.GetMethod("Exp", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, Exp_65);
-
-            UnityEngine.Debug.Log("math 3");
-
             args = new Type[]{typeof(System.Double), typeof(System.Double)};
             method = type.GetMethod("Pow", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, Pow_68);

@@ -370,7 +370,14 @@ public class App : MonoBehaviour
             appdomain.Invoke("HotFix_Project.Main", "BackData", null, data);
         }
     }
+    public long ToUnixTime()
+    {
+        //UnityEngine.Debug.Log(DateTime.UtcNow.ToString());
+        double k = (DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
+        return Convert.ToInt64(k);
+    }
     #endregion
+
 
 
     //======测试======
