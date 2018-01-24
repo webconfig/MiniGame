@@ -89,15 +89,20 @@ namespace Assets
             System_Net_IPAddress_Binding.Register(app);
             System_Net_IPEndPoint_Binding.Register(app);
             System_Net_Sockets_Socket_Binding.Register(app);
+            UnityEngine_Application_Binding.Register(app);
             UnityEngine_Behaviour_Binding.Register(app);
             UnityEngine_Color_Binding.Register(app);
             UnityEngine_ImageConversion_Binding.Register(app);
             UnityEngine_Input_Binding.Register(app);
+            UnityEngine_LineRenderer_Binding.Register(app);
             UnityEngine_Mathf_Binding.Register(app);
             UnityEngine_Microphone_Binding.Register(app);
             UnityEngine_Object_Binding.Register(app);
+            UnityEngine_Physics2D_Binding.Register(app);
+            UnityEngine_QualitySettings_Binding.Register(app);
             UnityEngine_Quaternion_Binding.Register(app);
             UnityEngine_Random_Binding.Register(app);
+            UnityEngine_RaycastHit2D_Binding.Register(app);
             UnityEngine_Rect_Binding.Register(app);
             UnityEngine_Screen_Binding.Register(app);
             UnityEngine_Shader_Binding.Register(app);
@@ -125,7 +130,9 @@ namespace Assets
             UnityEngine_Texture2D_Binding.Register(app);
             UnityEngine_Texture_Binding.Register(app);
             UnityEngine_UI_Button_Binding.Register(app);
+            UnityEngine_UI_Graphic_Binding.Register(app);
             UnityEngine_UI_Image_Binding.Register(app);
+            UnityEngine_UI_Selectable_Binding.Register(app);
             UnityEngine_UI_Text_Binding.Register(app);
             UnityEngine_BoxCollider2D_Binding.Register(app);
             UnityEngine_CircleCollider2D_Binding.Register(app);
@@ -137,6 +144,7 @@ namespace Assets
             UnityEngine_Renderer_Binding.Register(app);
             App_Binding.Register(app);
             AssetbundleLoader_Binding.Register(app);
+            NetBase_Binding.Register(app);
             PressEventTrigger_Binding.Register(app);
 #if UNITY_ANDROID
             UnityEngine_AndroidJavaClass_Binding.Register(app);

@@ -52,18 +52,21 @@ namespace ILRuntime.Runtime.Generated
             args = new Type[] { typeof(System.String) };
             method = type.GetMethod("commonFunction", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, commonFunction_9);
+            args = new Type[] { typeof(System.Collections.IEnumerator) };
+            method = type.GetMethod("DoCoroutine", flag, null, args, null);
+            app.RegisterCLRMethodRedirection(method, DoCoroutine_10);
             args = new Type[] { };
             method = type.GetMethod("Over", flag, null, args, null);
-            app.RegisterCLRMethodRedirection(method, Over_10);
+            app.RegisterCLRMethodRedirection(method, Over_11);
             args = new Type[] { typeof(System.String), typeof(System.Int32), typeof(System.Single), typeof(System.Single), typeof(NetWorkType) };
             method = type.GetMethod("InitNetWork", flag, null, args, null);
-            app.RegisterCLRMethodRedirection(method, InitNetWork_11);
+            app.RegisterCLRMethodRedirection(method, InitNetWork_12);
             args = new Type[] { };
             method = type.GetMethod("ToUnixTime", flag, null, args, null);
-            app.RegisterCLRMethodRedirection(method, ToUnixTime_12);
+            app.RegisterCLRMethodRedirection(method, ToUnixTime_13);
             args = new Type[] { };
             method = type.GetMethod("EndNetWork", flag, null, args, null);
-            app.RegisterCLRMethodRedirection(method, EndNetWork_13);
+            app.RegisterCLRMethodRedirection(method, EndNetWork_14);
 
             field = type.GetField("network", flag);
             app.RegisterCLRFieldGetter(field, get_network_0);
@@ -230,7 +233,25 @@ namespace ILRuntime.Runtime.Generated
             return __ret;
         }
 
-        static StackObject* Over_10(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
+        static StackObject* DoCoroutine_10(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
+        {
+            ILRuntime.Runtime.Enviorment.AppDomain __domain = __intp.AppDomain;
+            StackObject* ptr_of_this_method;
+            StackObject* __ret = ILIntepreter.Minus(__esp, 2);
+            ptr_of_this_method = ILIntepreter.Minus(__esp, 1);
+            System.Collections.IEnumerator coroutine = (System.Collections.IEnumerator)typeof(System.Collections.IEnumerator).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack));
+            __intp.Free(ptr_of_this_method);
+            ptr_of_this_method = ILIntepreter.Minus(__esp, 2);
+            App instance_of_this_method;
+            instance_of_this_method = (App)typeof(App).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack));
+            __intp.Free(ptr_of_this_method);
+
+            instance_of_this_method.DoCoroutine(coroutine);
+
+            return __ret;
+        }
+
+        static StackObject* Over_11(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
         {
             ILRuntime.Runtime.Enviorment.AppDomain __domain = __intp.AppDomain;
             StackObject* ptr_of_this_method;
@@ -245,7 +266,7 @@ namespace ILRuntime.Runtime.Generated
             return __ret;
         }
 
-        static StackObject* InitNetWork_11(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
+        static StackObject* InitNetWork_12(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
         {
             ILRuntime.Runtime.Enviorment.AppDomain __domain = __intp.AppDomain;
             StackObject* ptr_of_this_method;
@@ -272,7 +293,7 @@ namespace ILRuntime.Runtime.Generated
             return __ret;
         }
 
-        static StackObject* ToUnixTime_12(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
+        static StackObject* ToUnixTime_13(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
         {
             ILRuntime.Runtime.Enviorment.AppDomain __domain = __intp.AppDomain;
             StackObject* ptr_of_this_method;
@@ -289,7 +310,7 @@ namespace ILRuntime.Runtime.Generated
             return __ret + 1;
         }
 
-        static StackObject* EndNetWork_13(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
+        static StackObject* EndNetWork_14(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
         {
             ILRuntime.Runtime.Enviorment.AppDomain __domain = __intp.AppDomain;
             StackObject* ptr_of_this_method;

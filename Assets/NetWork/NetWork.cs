@@ -27,6 +27,15 @@ public class NetBase
     public Action HeartEvent;
     public Action<bool> ConnectResultEvent;
 
+    public object has_send_obj = new object();
+    public bool has_send = false, has_recv = false;
+    private float last_send = 0, Last_recv = 0;
+    private object msg_obj = new object();
+    public List<MsgData> msgs = new List<MsgData>();
+    public List<MsgData> msgs_all = new List<MsgData>();
+    public List<MsgData> msg_pool = new List<MsgData>();
+    private object msg_pool_obj = new object();
+
     public NetBase(string _ip, int _port, float _HeartTime, float _DisConnTime, NetWorkType _type)
     {
         ip = _ip;
@@ -111,12 +120,6 @@ public class NetBase
     }
     #endregion
 
-    public object has_send_obj = new object();
-    public bool has_send = false, has_recv = false;
-    private float last_send = 0, Last_recv = 0;
-    private object msg_obj = new object();
-    public List<MsgData> msgs = new List<MsgData>();
-    public List<MsgData> msgs_all = new List<MsgData>();
 
     private void Clear()
     {
@@ -193,8 +196,6 @@ public class NetBase
     }
 
     #region pool
-    public List<MsgData> msg_pool = new List<MsgData>();
-    private object msg_pool_obj = new object();
     public MsgData GetMsg()
     {
         lock (msg_pool_obj)
@@ -228,6 +229,11 @@ public class NetBase
                 msg_pool.Clear();
                 msg_pool = null;
             }
+        }
+        lock (msg_obj)
+        {
+            msgs = null;
+            msgs_all = null;
         }
     }
     #endregion
@@ -359,6 +365,8 @@ public class NetBase
     public void End()
     {
         Debug.Log("====end=====");
+        ClearMsg();
+        handlers = null;
         switch (type)
         {
             case NetWorkType.Kcp:

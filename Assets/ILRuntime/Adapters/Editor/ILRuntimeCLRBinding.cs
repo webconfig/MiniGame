@@ -43,10 +43,10 @@ public class ILRuntimeCLRBinding
         //===2
 
 
-        types.Add(typeof(Dictionary<int, GameObject>));
-        types.Add(typeof(Dictionary<int, App>));
-        types.Add(typeof(Dictionary<string, GameObject>));
-        types.Add(typeof(Dictionary<string, App>));
+        //types.Add(typeof(Dictionary<int, GameObject>));
+        //types.Add(typeof(Dictionary<int, App>));
+        //types.Add(typeof(Dictionary<string, GameObject>));
+        //types.Add(typeof(Dictionary<string, App>));
         //////====system===
         //types.Add(typeof(BitConverter));
         //types.Add(typeof(MemoryStream));
@@ -75,6 +75,7 @@ public class ILRuntimeCLRBinding
         //types.Add(typeof(UnityEngine.Color));
         //types.Add(typeof(UnityEngine.Microphone));
         //types.Add(typeof(UnityEngine.WWW));
+        types.Add(typeof(UnityEngine.LineRenderer));
 
         ////==
         //types.Add(typeof(GameObject));

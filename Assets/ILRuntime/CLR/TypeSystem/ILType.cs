@@ -30,7 +30,8 @@ namespace ILRuntime.CLR.TypeSystem
         int fieldStartIdx = -1;
         int totalFieldCnt = -1;
         KeyValuePair<string, IType>[] genericArguments;
-        IType baseType, byRefType, arrayType, enumType, elementType;
+        IType baseType, byRefType, enumType, elementType;
+        Dictionary<int, IType> arrayTypes;
         Type arrayCLRType, byRefCLRType;
         IType[] interfaces;
         bool baseTypeInitialized = false;
@@ -151,6 +152,14 @@ namespace ILRuntime.CLR.TypeSystem
             }
         }
 
+        public bool IsGenericParameter
+        {
+            get
+            {
+                return definition.IsGenericParameter && genericArguments == null;
+            }
+        }
+
         public Dictionary<string, int> StaticFieldMapping { get { return staticFieldMapping; } }
         public ILRuntime.Runtime.Enviorment.AppDomain AppDomain
         {
@@ -255,6 +264,11 @@ namespace ILRuntime.CLR.TypeSystem
             get; private set;
         }
 
+        public int ArrayRank
+        {
+            get; private set;
+        }
+
         private bool? isValueType;
 
         public bool IsValueType
@@ -337,7 +351,7 @@ namespace ILRuntime.CLR.TypeSystem
         {
             get
             {
-                return arrayType;
+                return arrayTypes != null ? arrayTypes[1] : null;
             }
         }
 
@@ -557,7 +571,7 @@ namespace ILRuntime.CLR.TypeSystem
                         methods[i.Name] = lst;
                     }
                     var m = new ILMethod(i, this, appdomain);
-                    lst.Add(new ILMethod(i, this, appdomain));
+                    lst.Add(m);
                 }
             }
 
@@ -613,7 +627,7 @@ namespace ILRuntime.CLR.TypeSystem
                     if (i.ParameterCount == pCnt)
                     {
                         bool match = true;
-                        if (genericArguments != null && i.GenericParameterCount == genericArguments.Length)
+                        if (genericArguments != null && i.GenericParameterCount == genericArguments.Length && genericMethod == null)
                         {
                             genericMethod = CheckGenericParams(i, param, ref match);
                         }
@@ -691,8 +705,16 @@ namespace ILRuntime.CLR.TypeSystem
                 for (int j = 0; j < param.Count; j++)
                 {
                     var p = i.Parameters[j];
+                    if (p.IsGenericParameter)
+                        continue;
                     if (p.HasGenericParameter)
                     {
+                        var p2 = param[j];
+                        if(p.Name != p2.Name)
+                        {
+                            match = false;
+                            break;
+                        }
                         //TODO should match the generic parameters;
                         continue;
                     }
@@ -969,17 +991,21 @@ namespace ILRuntime.CLR.TypeSystem
             return byRefType;
         }
 
-        public IType MakeArrayType()
+        public IType MakeArrayType(int rank)
         {
-            if (arrayType == null)
+            if (arrayTypes == null)
+                arrayTypes = new Dictionary<int, IType>();
+            IType atype;
+            if(!arrayTypes.TryGetValue(rank, out atype))
             {
-                var def = new ArrayType(typeRef);
-                arrayType = new ILType(def, appdomain);
-                ((ILType)arrayType).IsArray = true;
-                ((ILType)arrayType).elementType = this;
-                ((ILType)arrayType).arrayCLRType = this.TypeForCLR.MakeArrayType();
+                var def = new ArrayType(typeRef, rank);
+                atype = new ILType(def, appdomain);
+                ((ILType)atype).IsArray = true;
+                ((ILType)atype).elementType = this;
+                ((ILType)atype).arrayCLRType = rank > 1 ? this.TypeForCLR.MakeArrayType(rank) : this.TypeForCLR.MakeArrayType();
+                arrayTypes[rank] = atype;
             }
-            return arrayType;
+            return atype;
         }
 
         public IType ResolveGenericType(IType contextType)
