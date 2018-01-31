@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using ILRuntime.CLR.TypeSystem;
 using ILRuntime.CLR.Method;
 using System.Collections;
+using System.Threading;
 
 public class App : MonoBehaviour
 {
@@ -72,7 +73,6 @@ public class App : MonoBehaviour
             _run = 0;
             AssetbundleLoader.Clear();//释放资源
             EndNetWork();
-            //Buffer.BlockCopy(buf, 20, msg_datas, 0, MsgSize);
             method = null;
             method_update = null;
             method_out = null;
@@ -162,6 +162,7 @@ public class App : MonoBehaviour
     void LoadHotFixAssembly(string game)
     {
         appdomain = new ILRuntime.Runtime.Enviorment.AppDomain();
+        appdomain.UnityMainThreadID = Thread.CurrentThread.ManagedThreadId;
         string dll_path = string.Format("{0}/game/{1}/{2}", data_path, game, "HotFix_Project.dll");
         byte[] dll = File.ReadAllBytes(dll_path);
         string dll_pdb_path = string.Format("{0}/game/{1}/{2}", data_path, game, "HotFix_Project.pdb");
@@ -385,25 +386,31 @@ public class App : MonoBehaviour
     }
     #endregion
 
-    void OnApplicationFocus(bool isFocus)
-    {
-        if (isFocus)
-        {
-        }
-        else
-        {
-            if (appdomain != null && method_out != null)
-            {
-                appdomain.Invoke(method_out, null, null);
-            }
-            Debug.Log("离开游戏 激活推送");
-        }
-    }
+//    void OnApplicationFocus(bool isFocus)
+//    {
+//        if (isFocus)
+//        {
+//        }
+//        else
+//        {
+//#if !UNITY_EDITOR
+//            Debug.Log("离开游戏 激活推送");
+//            if (appdomain != null && method_out != null)
+//            {
+//                appdomain.Invoke(method_out, null, null);
+//            }
+//#endif
+//        }
+//    }
     void OnApplicationPause(bool isPause)
     {
         if (isPause)
         {
             Debug.Log("游戏暂停 一切停止");  // 缩到桌面的时候触发
+            if (appdomain != null && method_out != null)
+            {
+                appdomain.Invoke(method_out, null, null);
+            }
         }
     }
 

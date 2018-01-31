@@ -162,31 +162,26 @@ public class TcpClient
     }
     #endregion
 
-    #region 发送      
+    #region 发送  
+    byte[] data = new byte[1024];
     public void Send(UInt32 id, UInt32 protocol, Int32 cmd, byte[] msg)
     {
         if (parent.state < 0) { return; }
         uint body_key = Convert.ToUInt32(CRC32Cls.GetCRC32(msg));
 
-        byte[] id_bytes = BitConverter.GetBytes(id);//id
-        byte[] protocol_bytes = BitConverter.GetBytes(protocol);//protocol
-        byte[] cmd_bytes = BitConverter.GetBytes(cmd);//cmd
-        byte[] body_key_bytes = BitConverter.GetBytes(body_key);//cmd
-
-        UInt32 total_length = (UInt32)(id_bytes.Length + protocol_bytes.Length + cmd_bytes.Length + body_key_bytes.Length + msg.Length + 4);
+        UInt32 total_length = (UInt32)(20 + msg.Length);
 
         //消息体结构：消息体长度+消息体
-        byte[] data = new byte[total_length];
         BitConverter.GetBytes(total_length).CopyTo(data, 0);
-        id_bytes.CopyTo(data, 4);
-        protocol_bytes.CopyTo(data, 8);
-        cmd_bytes.CopyTo(data, 12);
-        body_key_bytes.CopyTo(data, 16);
+        BitConverter.GetBytes(id).CopyTo(data, 4);
+        BitConverter.GetBytes(protocol).CopyTo(data, 8);
+        BitConverter.GetBytes(cmd).CopyTo(data, 12);
+        BitConverter.GetBytes(body_key).CopyTo(data, 16);
         msg.CopyTo(data, 20);
         try
         {
             parent.HasSend();
-            socket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(send_back), null);
+            socket.BeginSend(data, 0, (int)total_length, SocketFlags.None, new AsyncCallback(send_back), null);
         }
         catch (Exception ex)
         {
@@ -229,6 +224,7 @@ public class TcpClient
         if (parent != null)
         {
             //==
+            data = null;
             parent = null;
             buffer = null;
             ConnectResultEvent = null;
