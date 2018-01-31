@@ -162,7 +162,7 @@ public class App : MonoBehaviour
     void LoadHotFixAssembly(string game)
     {
         appdomain = new ILRuntime.Runtime.Enviorment.AppDomain();
-        appdomain.UnityMainThreadID = Thread.CurrentThread.ManagedThreadId;
+        //appdomain.UnityMainThreadID = Thread.CurrentThread.ManagedThreadId;
         string dll_path = string.Format("{0}/game/{1}/{2}", data_path, game, "HotFix_Project.dll");
         byte[] dll = File.ReadAllBytes(dll_path);
         string dll_pdb_path = string.Format("{0}/game/{1}/{2}", data_path, game, "HotFix_Project.pdb");
