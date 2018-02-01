@@ -89,6 +89,7 @@ public class NetBase
     public void DisConn()
     {
         Debug.LogError("==dis conn==");
+        state = -1;
         if (DisConnectEvent != null)
         {
             DisConnectEvent();
@@ -162,13 +163,15 @@ public class NetBase
             {
                 msgs_all.AddRange(msgs);
                 msgs.Clear();
+                has_recv = true;
+                //Debug.LogError("有信息");
             }
-            has_recv = true;
         }
         if (msgs_all.Count > 0)
         {
             for (int i = 0; i < msgs_all.Count; i++)
             {
+                //Debug.LogError("处理信息："+ msgs_all[i].cmd);
                 Handle(msgs_all[i].id, msgs_all[i].cmd, msgs_all[i].datas);
             }
             BackMsg(msgs_all);
@@ -179,6 +182,7 @@ public class NetBase
     {
         if (state > 0)
         {
+            //Debug.Log("短线判断：" + (Time.time - Last_recv) + "----" + Last_recv + "----" + state + "----DisConnTime:" + DisConnTime + ",HeartTime:" + HeartTime);
             DealData();
             if (has_send) { has_send = false; last_send = Time.time; }
             if (has_recv) { has_recv = false; Last_recv = Time.time; }
