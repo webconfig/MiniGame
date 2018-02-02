@@ -192,7 +192,7 @@ public class NetBase
             }
             if ((Last_recv > 0) && ((Time.time - Last_recv) >= DisConnTime))
             {//居然间隔9秒都没有数据，断线了
-                Debug.LogError("=======居然间隔6秒都没有数据，断线了:" + (Last_recv - last_send));
+                Debug.LogError("=======居然间隔"+ (Time.time - Last_recv) + "秒都没有数据，断线了:" + (Last_recv - last_send));
                 Last_recv = -1;
                 DisConn();
             }
@@ -244,6 +244,7 @@ public class NetBase
 
     public void SendHeart()
     {
+        if (state < 0) { Debug.Log("断线后，不发送心跳"); }
         if (HeartEvent != null)
         {
             HeartEvent();
@@ -259,6 +260,7 @@ public class NetBase
     /// <param name="t">协议</param>
     public void Send(UInt32 id, UInt32 protocol, Int32 cmd, byte[] datas)
     {
+        if (state < 0) { Debug.Log("断线后，不发送数据"); }
         switch (type)
         {
             case NetWorkType.Kcp:
@@ -268,10 +270,12 @@ public class NetBase
                 tcp.Send(id, protocol, cmd, datas);
                 break;
         }
+
     }
 
     public void Send(byte[] datas)
     {
+        if (state < 0) { Debug.Log("断线后，不发送心跳"); }
         switch (type)
         {
             case NetWorkType.Kcp:
@@ -345,7 +349,7 @@ public class NetBase
         Action<NetBase, System.Byte[], System.Int32> handler;
         if (!handlers.TryGetValue(command, out handler))
         {
-            Debug.Log("未至命令：" + command);
+            Debug.Log("未知命令：" + command);
             return;
         }
 

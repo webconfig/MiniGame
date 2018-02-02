@@ -3,12 +3,9 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using Ionic.Zip;
-using LitJson;
-using System.Collections.Generic;
 using ILRuntime.CLR.TypeSystem;
 using ILRuntime.CLR.Method;
 using System.Collections;
-using System.Threading;
 
 public class App : MonoBehaviour
 {
