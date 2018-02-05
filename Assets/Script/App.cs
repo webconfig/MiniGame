@@ -64,9 +64,9 @@ public class App : MonoBehaviour
 
     private void Update()
     {
-        //Debug.Log(Time.deltaTime);
         if (_run == -1)
         {//游戏结束
+            Debug.LogWarning("==========游戏结束清理资源开始=============");
             _run = 0;
             AssetbundleLoader.Clear();//释放资源
             EndNetWork();
@@ -74,6 +74,12 @@ public class App : MonoBehaviour
             method_update = null;
             method_out = null;
             appdomain = null;
+            Debug.LogWarning("==========游戏结束清理资源结束=============");
+        }
+        else if(_run==100)
+        {
+            Debug.LogWarning("==========开始加载游戏=============");
+            load_game(gamename);
         }
         else if (_run > 0)
         {
@@ -107,9 +113,19 @@ public class App : MonoBehaviour
     /// <param name="game"></param>
     public void Load(string game)
     {
+        gamename = game;
+        _run = 100;
+    }
+    private void load_game(string game)
+    {
         if (_run == -1)
         {//游戏结束
+            Debug.LogWarning("==========游戏开始但是上一次没有清理资源=============");
             AssetbundleLoader.Clear();//释放资源
+            EndNetWork();
+            method = null;
+            method_update = null;
+            method_out = null;
             appdomain = null;
         }
         _run = 0;
@@ -383,7 +399,7 @@ public class App : MonoBehaviour
     }
     #endregion
 
-//    void OnApplicationFocus(bool isFocus)
+    //    void OnApplicationFocus(bool isFocus)
 //    {
 //        if (isFocus)
 //        {
@@ -412,11 +428,11 @@ public class App : MonoBehaviour
     }
 
     //======测试======
-    public void LoadTest()
+    private void LoadTest()
     {
         Load(gamename);
     }
-    public void RunTest()
+    private void RunTest()
     {
         Run(gamename);
     }
@@ -424,7 +440,7 @@ public class App : MonoBehaviour
     /// 运行游戏(测试用)
     /// </summary>
     /// <param name="game">游戏名称</param>
-    public void Run(string game)
+    private void Run(string game)
     {
 #if UNITY_EDITOR || UNITY_ANDROID
         data_path = Application.persistentDataPath;
@@ -505,8 +521,6 @@ public enum RunTyp
     发布正式= 0,
     发布覆盖测试 = 1,
     本地覆盖测试 = 2,
-
     不覆盖运行=3
-
 }
 

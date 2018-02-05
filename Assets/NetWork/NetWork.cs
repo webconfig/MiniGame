@@ -192,7 +192,7 @@ public class NetBase
             }
             if ((Last_recv > 0) && ((Time.time - Last_recv) >= DisConnTime))
             {//居然间隔9秒都没有数据，断线了
-                Debug.LogError("=======居然间隔"+ (Time.time - Last_recv) + "秒都没有数据，断线了:" + (Last_recv - last_send));
+                Debug.LogError("=======居然间隔"+ (Time.time - Last_recv) + "秒都没有数据，断线了:" + (Time.time - last_send));
                 Last_recv = -1;
                 DisConn();
             }
@@ -261,6 +261,7 @@ public class NetBase
     public void Send(UInt32 id, UInt32 protocol, Int32 cmd, byte[] datas)
     {
         if (state < 0) { Debug.Log("断线后，不发送数据"); }
+        //else { Debug.Log("发送命令：" + cmd); }
         switch (type)
         {
             case NetWorkType.Kcp:
@@ -276,6 +277,7 @@ public class NetBase
     public void Send(byte[] datas)
     {
         if (state < 0) { Debug.Log("断线后，不发送心跳"); }
+        //else { Debug.Log("发送数据：" + datas.Length); }
         switch (type)
         {
             case NetWorkType.Kcp:
