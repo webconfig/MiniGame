@@ -28,8 +28,9 @@ public class NetBase
     public Action<bool> ConnectResultEvent;
 
     public object has_send_obj = new object();
-    public bool has_send = false, has_recv = false;
-    private float last_send = 0, Last_recv = 0;
+    public bool has_send = false, has_recv = false,can_send_heart=false,can_check_dis=false;
+    public double heart_time=0, dis_time=0;
+    private DateTime last_send, Last_recv;
     private object msg_obj = new object();
     public List<MsgData> msgs = new List<MsgData>();
     public List<MsgData> msgs_all = new List<MsgData>();
@@ -41,8 +42,8 @@ public class NetBase
         ip = _ip;
         port = _port;
         type = _type;
-        DisConnTime = _DisConnTime;
-        HeartTime = _HeartTime;
+        DisConnTime = _DisConnTime*1000;
+        HeartTime = _HeartTime*1000;
         lock (msg_obj) { }
         switch (type)
         {
@@ -134,8 +135,8 @@ public class NetBase
         {
             has_send = false;
         }
-        last_send = 0;
-        Last_recv = 0;
+        can_send_heart = false;
+        can_check_dis = false;
     }
 
     public void HasSend()
@@ -182,19 +183,27 @@ public class NetBase
     {
         if (state > 0)
         {
-            //Debug.Log("短线判断：" + (Time.time - Last_recv) + "----" + Last_recv + "----" + state + "----DisConnTime:" + DisConnTime + ",HeartTime:" + HeartTime);
             DealData();
-            if (has_send) { has_send = false; last_send = Time.time; }
-            if (has_recv) { has_recv = false; Last_recv = Time.time; }
-            if ((last_send > 0) && ((Time.time - last_send) >= HeartTime))
+            //Debug.Log("断线判断时间：" + dis_time + ",心跳时间：" + heart_time);
+            if (has_send) { has_send = false; last_send = DateTime.Now; can_send_heart = true;}
+            if (has_recv) { has_recv = false; Last_recv = DateTime.Now; can_check_dis = true; }
+            if (can_send_heart)
             {//没间隔1秒发一个心跳包
-                SendHeart();
+                heart_time= (DateTime.Now - last_send).TotalMilliseconds;
+                if (heart_time >= HeartTime)
+                {
+                    SendHeart();
+                }
             }
-            if ((Last_recv > 0) && ((Time.time - Last_recv) >= DisConnTime))
-            {//居然间隔9秒都没有数据，断线了
-                Debug.LogError("=======居然间隔"+ (Time.time - Last_recv) + "秒都没有数据，断线了:" + (Time.time - last_send));
-                Last_recv = -1;
-                DisConn();
+            if (can_check_dis)
+            {//断线判断
+                dis_time = (DateTime.Now - Last_recv).TotalMilliseconds;
+                if (dis_time >= DisConnTime)
+                {
+                    Debug.LogError("=======居然间隔" + dis_time + "秒都没有数据，断线了:" + heart_time);
+                    can_check_dis = false;
+                    DisConn();
+                }
             }
         }
     }
@@ -362,8 +371,8 @@ public class NetBase
         }
         catch (Exception ex)
         {
-            UnityEngine.Debug.Log(
-                "PacketElementTypeException: " + ex.Message + Environment.NewLine +
+            UnityEngine.Debug.LogError(
+                "处理服务器消息异常: " + ex.Message + Environment.NewLine +
                 ex.StackTrace + Environment.NewLine +
                 "Packet: " + Environment.NewLine +
                 command.ToString()

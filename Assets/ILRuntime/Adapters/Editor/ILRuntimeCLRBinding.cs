@@ -174,7 +174,7 @@ public class ILRuntimeCLRBinding
         domain.RegisterCrossBindingAdaptor(new Adapt_IMessage());
         domain.DelegateManager.RegisterFunctionDelegate<Adapt_IMessage.Adaptor>();
 
-        //domain.RegisterCrossBindingAdaptor(new CoroutineAdapter());
+        domain.RegisterCrossBindingAdaptor(new CoroutineAdapter());
         //domain.RegisterCrossBindingAdaptor(new InheritanceAdapter());
 
     }

@@ -68,6 +68,7 @@ public class App : MonoBehaviour
         {//游戏结束
             Debug.LogWarning("==========游戏结束清理资源开始=============");
             _run = 0;
+            StopAllCoroutines();//结束所有携程
             AssetbundleLoader.Clear();//释放资源
             EndNetWork();
             method = null;
@@ -136,6 +137,7 @@ public class App : MonoBehaviour
         data_path = Application.temporaryCachePath;
 #endif
 
+        epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         Debug.Log("开始加载游戏：" + data_path);
         //===ab初始化====
@@ -249,6 +251,7 @@ public class App : MonoBehaviour
     #endregion
 
     #region 热更新工程接口
+    private DateTime epoch;
     private ios_sdk _ios_sdk = new ios_sdk();
     /// <summary>
     /// 结束
@@ -389,32 +392,35 @@ public class App : MonoBehaviour
     }
     public long ToUnixTime()
     {
-        //UnityEngine.Debug.Log(DateTime.UtcNow.ToString());
-        double k = (DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
+        double k = (DateTime.Now.ToUniversalTime() - epoch).TotalMilliseconds;
         return Convert.ToInt64(k);
     }
     public void DoCoroutine(IEnumerator coroutine)
     {
         StartCoroutine(coroutine);
     }
+    public void StopUnityCoroutines()
+    {
+        StopAllCoroutines();//结束所有携程
+    }
     #endregion
 
     //    void OnApplicationFocus(bool isFocus)
-//    {
-//        if (isFocus)
-//        {
-//        }
-//        else
-//        {
-//#if !UNITY_EDITOR
-//            Debug.Log("离开游戏 激活推送");
-//            if (appdomain != null && method_out != null)
-//            {
-//                appdomain.Invoke(method_out, null, null);
-//            }
-//#endif
-//        }
-//    }
+    //    {
+    //        if (isFocus)
+    //        {
+    //        }
+    //        else
+    //        {
+    //#if !UNITY_EDITOR
+    //            Debug.Log("离开游戏 激活推送");
+    //            if (appdomain != null && method_out != null)
+    //            {
+    //                appdomain.Invoke(method_out, null, null);
+    //            }
+    //#endif
+    //        }
+    //    }
     void OnApplicationPause(bool isPause)
     {
         if (isPause)
