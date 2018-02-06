@@ -163,14 +163,12 @@ public class TcpClient
     #endregion
 
     #region 发送  
-    byte[] data = new byte[1024];
     public void Send(UInt32 id, UInt32 protocol, Int32 cmd, byte[] msg)
     {
         if (parent.state < 0) { return; }
         uint body_key = Convert.ToUInt32(CRC32Cls.GetCRC32(msg));
-
         UInt32 total_length = (UInt32)(20 + msg.Length);
-
+        byte[] data = new byte[total_length];
         //消息体结构：消息体长度+消息体
         BitConverter.GetBytes(total_length).CopyTo(data, 0);
         BitConverter.GetBytes(id).CopyTo(data, 4);
@@ -181,7 +179,7 @@ public class TcpClient
         try
         {
             parent.HasSend();
-            socket.BeginSend(data, 0, (int)total_length, SocketFlags.None, new AsyncCallback(send_back), null);
+            socket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(send_back), null);
         }
         catch (Exception ex)
         {
@@ -224,7 +222,6 @@ public class TcpClient
         if (parent != null)
         {
             //==
-            data = null;
             parent = null;
             buffer = null;
             ConnectResultEvent = null;
