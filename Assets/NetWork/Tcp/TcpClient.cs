@@ -24,6 +24,7 @@ public class TcpClient
     {
         this.buffer = new byte[BufferSize];
         parent = _parent;
+        head_data = new byte[20]; 
     }
 
     #region 连接
@@ -114,6 +115,9 @@ public class TcpClient
     }
 
     Int32 DataSize = 0, MsgSize = 0, bytesRead = 0;
+    public byte[] head_data;
+    public int head_recv_index = 0;
+    public int head_recv_count = 0;
     /// <summary>
     /// 接收数据
     /// </summary>
@@ -125,39 +129,62 @@ public class TcpClient
             while (parent.state > 0)
             {
                 //接受头
-                //Debug.LogError("接受数据");
-                bytesRead = socket.Receive(buffer, 20, SocketFlags.None);
-                if (bytesRead <= 0)
+                head_recv_index = 0;
+                head_recv_count = 0;
+                while (head_recv_index < 20)
                 {
-                    Debug.Log("==接受头 等于0退出==" + bytesRead);
-                    parent.DisConn();
-                    return;
+                    head_recv_count = 20 - head_recv_count;
+                    bytesRead = socket.Receive(buffer, head_recv_count, SocketFlags.None);
+                    if (bytesRead <= 0)
+                    {
+                        Debug.Log("==接受头 等于0退出==" + bytesRead);
+                        parent.DisConn();
+                        return;
+                    }
+                    Buffer.BlockCopy(buffer, 0, head_data, head_recv_index, bytesRead);
+                    head_recv_index += bytesRead;
                 }
+
 
                 //Debug.Log("==网络接收：" + bytesRead);
 
                 MsgData msgData = parent.GetMsg();
-                DataSize = BitConverter.ToInt32(buffer, 0);//包长度
-                msgData.id = BitConverter.ToInt32(buffer, 4);
-                msgData.cmd = BitConverter.ToInt32(buffer, 12);
+                DataSize = BitConverter.ToInt32(head_data, 0);//包长度
+                msgData.id = BitConverter.ToInt32(head_data, 4);
+                msgData.cmd = BitConverter.ToInt32(head_data, 12);
                 MsgSize = DataSize - 20;//消息体长度
 
-                //接受内容
-                bytesRead = socket.Receive(buffer, MsgSize, SocketFlags.None);
-                if (bytesRead <= 0)
+
+                if (MsgSize < 0)
                 {
-                    Debug.Log("==接受协议内容 等于0退出==" + bytesRead);
+                    Debug.LogError("==============接受数据后解析内容异常=========");
                     parent.DisConn();
                     return;
                 }
+
+
                 msgData.datas = new byte[MsgSize];
-                Buffer.BlockCopy(buffer, 0, msgData.datas, 0, MsgSize);
+                msgData.datas_recv_index = 0;
+                while (msgData.datas_recv_index < MsgSize)
+                {//读取消息体
+                    msgData.datas_recv_count = MsgSize - msgData.datas_recv_index;
+                    //接受内容
+                    bytesRead = socket.Receive(buffer, 0, msgData.datas_recv_count, SocketFlags.None);
+                    if (bytesRead <= 0)
+                    {
+                        Debug.Log("==接受协议内容 等于0退出==" + bytesRead);
+                        parent.DisConn();
+                        return;
+                    }
+                    Buffer.BlockCopy(buffer, 0, msgData.datas, msgData.datas_recv_index, bytesRead);
+                    msgData.datas_recv_index += bytesRead;
+                }
                 parent.HasRecv(msgData);
             }
         }
-        catch
+        catch (Exception ex)
         {
-
+            Debug.LogError("==============接受数据异常退出=========");
         }
     }
     #endregion
@@ -222,6 +249,7 @@ public class TcpClient
         if (parent != null)
         {
             //==
+            head_data = null;
             parent = null;
             buffer = null;
             ConnectResultEvent = null;
@@ -259,5 +287,7 @@ public class MsgData
     public int id;
     public int cmd;
     public byte[] datas;
+    public int datas_recv_index = 0;
+    public int datas_recv_count = 0;
 }
 
