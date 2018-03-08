@@ -119,6 +119,7 @@ public class App : MonoBehaviour
     }
     private void load_game(string game)
     {
+        Screen.orientation = ScreenOrientation.Portrait;
         if (_run == -1)
         {//游戏结束
             Debug.LogWarning("==========游戏开始但是上一次没有清理资源=============");
@@ -521,6 +522,15 @@ public class App : MonoBehaviour
 #endif
         Load(game);
     }
+
+    //void OnGUI()
+    //{
+    //    if (GUI.Button(new Rect(100, 100, 100, 100), "横屏"))
+    //        Screen.orientation = ScreenOrientation.LandscapeLeft;
+    //    if (GUI.Button(new Rect(100, 200, 100, 100), "竖屏"))
+    //        Screen.orientation = ScreenOrientation.Portrait;
+
+    //}
 }
 public enum RunTyp
 {

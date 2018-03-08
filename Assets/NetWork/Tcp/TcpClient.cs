@@ -22,6 +22,7 @@ public class TcpClient
 
     public TcpClient(NetBase _parent)
     {
+        BufferSize = BufferSize * 5;
         this.buffer = new byte[BufferSize];
         parent = _parent;
         head_data = new byte[20]; 
@@ -184,7 +185,7 @@ public class TcpClient
         }
         catch (Exception ex)
         {
-            Debug.LogError("==============接受数据异常退出=========");
+            Debug.LogError("==============接受数据异常退出："+ex.ToString());
         }
     }
     #endregion
@@ -207,6 +208,14 @@ public class TcpClient
         {
             parent.HasSend();
             socket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(send_back), null);
+
+            ////=====测试======
+            //string str = "";
+            //for (int i = 0; i < data.Length; i++)
+            //{
+            //    str += Convert.ToString(data[i], 16);
+            //}
+            //Debug.Log("发送命令：" + cmd);
         }
         catch (Exception ex)
         {

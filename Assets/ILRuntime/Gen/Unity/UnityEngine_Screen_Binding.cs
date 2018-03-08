@@ -22,28 +22,32 @@ namespace ILRuntime.Runtime.Generated
             FieldInfo field;
             Type[] args;
             Type type = typeof(UnityEngine.Screen);
-            args = new Type[]{};
-            method = type.GetMethod("get_height", flag, null, args, null);
-            app.RegisterCLRMethodRedirection(method, get_height_0);
-            args = new Type[]{};
+            args = new Type[] { typeof(UnityEngine.ScreenOrientation) };
+            method = type.GetMethod("set_orientation", flag, null, args, null);
+            app.RegisterCLRMethodRedirection(method, set_orientation_0);
+            args = new Type[] { };
             method = type.GetMethod("get_width", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, get_width_1);
+            args = new Type[] { };
+            method = type.GetMethod("get_height", flag, null, args, null);
+            app.RegisterCLRMethodRedirection(method, get_height_2);
 
 
         }
 
 
-        static StackObject* get_height_0(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
+        static StackObject* set_orientation_0(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
         {
             ILRuntime.Runtime.Enviorment.AppDomain __domain = __intp.AppDomain;
             StackObject* ptr_of_this_method;
-            StackObject* __ret = ILIntepreter.Minus(__esp, 0);
+            StackObject* __ret = ILIntepreter.Minus(__esp, 1);
+            ptr_of_this_method = ILIntepreter.Minus(__esp, 1);
+            UnityEngine.ScreenOrientation value = (UnityEngine.ScreenOrientation)typeof(UnityEngine.ScreenOrientation).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack));
+            __intp.Free(ptr_of_this_method);
 
-            var result_of_this_method = UnityEngine.Screen.height;
+            UnityEngine.Screen.orientation = value;
 
-            __ret->ObjectType = ObjectTypes.Integer;
-            __ret->Value = result_of_this_method;
-            return __ret + 1;
+            return __ret;
         }
 
         static StackObject* get_width_1(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
@@ -53,6 +57,19 @@ namespace ILRuntime.Runtime.Generated
             StackObject* __ret = ILIntepreter.Minus(__esp, 0);
 
             var result_of_this_method = UnityEngine.Screen.width;
+
+            __ret->ObjectType = ObjectTypes.Integer;
+            __ret->Value = result_of_this_method;
+            return __ret + 1;
+        }
+
+        static StackObject* get_height_2(ILIntepreter __intp, StackObject* __esp, IList<object> __mStack, CLRMethod __method, bool isNewObj)
+        {
+            ILRuntime.Runtime.Enviorment.AppDomain __domain = __intp.AppDomain;
+            StackObject* ptr_of_this_method;
+            StackObject* __ret = ILIntepreter.Minus(__esp, 0);
+
+            var result_of_this_method = UnityEngine.Screen.height;
 
             __ret->ObjectType = ObjectTypes.Integer;
             __ret->Value = result_of_this_method;
